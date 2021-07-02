@@ -15,8 +15,6 @@ int main(int argc, char* argv[])
     std::ifstream stream(argv[1]);
     Parser parser(stream);
 
-    // parser.process();
-
     /*
     while (tokenizer.process())
     {

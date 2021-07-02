@@ -8,7 +8,7 @@ Parser::Parser(std::istream& stream) :
 bool Parser::parse()
 {
     m_tokenizer.advance();
-    return parseElement();
+    return parseValue();
 }
 
 ////////////////////////////////////////
@@ -110,7 +110,7 @@ bool Parser::parseObject()
             }
             printIndented(":");
             m_tokenizer.advance();
-            if (!parseElement())
+            if (!parseValue())
             {
                 m_fail = true;
                 return false;
@@ -148,7 +148,7 @@ bool Parser::parseArray()
                 printIndented(",");
                 m_tokenizer.advance();
             }
-            if (!parseElement())
+            if (!parseValue())
             {
                 m_fail = true;
                 return false;
@@ -166,7 +166,7 @@ bool Parser::parseArray()
     }
 }
 
-bool Parser::parseElement()
+bool Parser::parseValue()
 {
     return parseBoolean() ||
            parseNumber() ||

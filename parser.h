@@ -22,7 +22,7 @@ private:
     bool parseNull();
     bool parseArray();
     bool parseObject();
-    bool parseElement();
+    bool parseValue();
     void printIndented(const std::string&);
 };
 
