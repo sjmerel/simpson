@@ -7,6 +7,7 @@ Parser::Parser(std::istream& stream) :
 
 bool Parser::parse()
 {
+    m_tokenizer.advance();
     return parseElement();
 }
 
@@ -26,7 +27,7 @@ bool Parser::parseBoolean()
     if (m_tokenizer.getToken().type == TokenType::BOOLEAN)
     {
         printIndented(m_tokenizer.getToken().value);
-        m_tokenizer.process();
+        m_tokenizer.advance();
         return true;
     }
     else
@@ -37,10 +38,10 @@ bool Parser::parseBoolean()
 
 bool Parser::parseNumber()
 {
-    if (m_tokenizer.getToken().type == TokenType::NUMBER)
+    if (!m_fail && m_tokenizer.getToken().type == TokenType::NUMBER)
     {
         printIndented("number: " + m_tokenizer.getToken().value);
-        m_tokenizer.process();
+        m_tokenizer.advance();
         return true;
     }
     else
@@ -51,10 +52,10 @@ bool Parser::parseNumber()
 
 bool Parser::parseString()
 {
-    if (m_tokenizer.getToken().type == TokenType::STRING)
+    if (!m_fail && m_tokenizer.getToken().type == TokenType::STRING)
     {
         printIndented("\"" + m_tokenizer.getToken().value + "\"");
-        m_tokenizer.process();
+        m_tokenizer.advance();
         return true;
     }
     else
@@ -65,10 +66,10 @@ bool Parser::parseString()
 
 bool Parser::parseNull()
 {
-    if (m_tokenizer.getToken().type == TokenType::NULL_)
+    if (!m_fail && m_tokenizer.getToken().type == TokenType::NULL_)
     {
         printIndented("null");
-        m_tokenizer.process();
+        m_tokenizer.advance();
         return true;
     }
     else
@@ -79,13 +80,13 @@ bool Parser::parseNull()
 
 bool Parser::parseObject()
 {
-    if (m_tokenizer.getToken().type == TokenType::OBJECT_START)
+    if (!m_fail && m_tokenizer.getToken().type == TokenType::OBJECT_START)
     {
         int count = 0;
         printIndented("{");
         ++m_level;
-        m_tokenizer.process();
-        while (m_tokenizer.getToken().type != TokenType::OBJECT_END)
+        m_tokenizer.advance();
+        while (!m_fail && m_tokenizer.getToken().type != TokenType::OBJECT_END)
         {
             if (count > 0)
             {
@@ -95,7 +96,7 @@ bool Parser::parseObject()
                     return false;
                 }
                 printIndented(",");
-                m_tokenizer.process();
+                m_tokenizer.advance();
             }
             if (!parseString())
             {
@@ -108,7 +109,7 @@ bool Parser::parseObject()
                 return false;
             }
             printIndented(":");
-            m_tokenizer.process();
+            m_tokenizer.advance();
             if (!parseElement())
             {
                 m_fail = true;
@@ -116,7 +117,7 @@ bool Parser::parseObject()
             }
             ++count;
         }
-        m_tokenizer.process();
+        m_tokenizer.advance();
         --m_level;
         printIndented("}");
         return true;
@@ -129,12 +130,12 @@ bool Parser::parseObject()
 
 bool Parser::parseArray()
 {
-    if (m_tokenizer.getToken().type == TokenType::ARRAY_START)
+    if (!m_fail && m_tokenizer.getToken().type == TokenType::ARRAY_START)
     {
         int count = 0;
         printIndented("[");
         ++m_level;
-        m_tokenizer.process();
+        m_tokenizer.advance();
         while (m_tokenizer.getToken().type != TokenType::ARRAY_END)
         {
             if (count > 0)
@@ -145,7 +146,7 @@ bool Parser::parseArray()
                     return false;
                 }
                 printIndented(",");
-                m_tokenizer.process();
+                m_tokenizer.advance();
             }
             if (!parseElement())
             {
@@ -154,7 +155,7 @@ bool Parser::parseArray()
             }
             ++count;
         }
-        m_tokenizer.process();
+        m_tokenizer.advance();
         --m_level;
         printIndented("]");
         return true;

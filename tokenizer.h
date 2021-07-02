@@ -9,7 +9,7 @@ class Tokenizer
 public:
     Tokenizer(std::istream&);
 
-    bool process();
+    bool advance();
     bool eof() const;
     bool fail() const;
     const Token& getToken() { return m_token; }

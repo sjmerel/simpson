@@ -6,9 +6,8 @@ Tokenizer::Tokenizer(std::istream& stream) :
 {
 }
 
-bool Tokenizer::process()
+bool Tokenizer::advance()
 {
-    //std::cerr << "process" << std::endl;
     while (std::isspace(m_stream.peek()))
     {
         m_stream.ignore();
