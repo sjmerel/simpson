@@ -1,10 +1,10 @@
 #include "tokenizer.h"
 #include <sstream>
+#include <fstream>
 
 int g_level = 0;
+bool g_fail = false;
 
-bool parseArray(Tokenizer&);
-bool parseObject(Tokenizer&);
 bool parseElement(Tokenizer&);
 
 void printIndented(const std::string& s)
@@ -16,84 +16,158 @@ void printIndented(const std::string& s)
     std::cout << s << std::endl;
 }
 
-bool parseElement(Tokenizer& tokenizer)
+bool parseBoolean(Tokenizer& tokenizer)
 {
-    /*
-    bool result = parseBoolean(tokenizer) ||
-                  parseNumber(tokenizer) ||
-                  parseString(tokenizer) ||
-                  parseNull(tokenizer) ||
-                  parseArray(tokenizer) ||
-                  parseObject(tokenizer);
-                  */
-    bool result = true;
-    switch (tokenizer.getToken().type)
+    if (tokenizer.getToken().type == TokenType::BOOLEAN)
     {
-        case TokenType::BOOLEAN:
-            printIndented("boolean:" + tokenizer.getToken().value);
-            break;
-        case TokenType::NUMBER:
-            printIndented("number:" + tokenizer.getToken().value);
-            break;
-        case TokenType::STRING:
-            printIndented("string:" + tokenizer.getToken().value);
-            break;
-        case TokenType::NULL_:
-            printIndented("null");
-            break;
-
-        case TokenType::ARRAY_START:
-            result = parseArray(tokenizer);
-            break;
-        case TokenType::ARRAY_END:
-            result = parseArray(tokenizer);
-            break;
-
-        case TokenType::OBJECT_START:
-            result = parseObject(tokenizer);
-            break;
-        case TokenType::OBJECT_END:
-            result = parseObject(tokenizer);
-            break;
-
-        default:
-            result = false;
-            break;
+        printIndented(tokenizer.getToken().value);
+        tokenizer.process();
+        return true;
     }
-    tokenizer.process();
-    return result;
+    else
+    {
+        return false;
+    }
+}
+
+bool parseNumber(Tokenizer& tokenizer)
+{
+    if (tokenizer.getToken().type == TokenType::NUMBER)
+    {
+        printIndented("number: " + tokenizer.getToken().value);
+        tokenizer.process();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool parseString(Tokenizer& tokenizer)
+{
+    if (tokenizer.getToken().type == TokenType::STRING)
+    {
+        printIndented("\"" + tokenizer.getToken().value + "\"");
+        tokenizer.process();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool parseNull(Tokenizer& tokenizer)
+{
+    if (tokenizer.getToken().type == TokenType::NULL_)
+    {
+        printIndented("null");
+        tokenizer.process();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool parseObject(Tokenizer& tokenizer)
 {
-    return false;
+    if (tokenizer.getToken().type == TokenType::OBJECT_START)
+    {
+        int count = 0;
+        printIndented("{");
+        ++g_level;
+        tokenizer.process();
+        while (tokenizer.getToken().type != TokenType::OBJECT_END)
+        {
+            if (count > 0)
+            {
+                if (tokenizer.getToken().type != TokenType::COMMA)
+                {
+                    g_fail = true;
+                    return false;
+                }
+                printIndented(",");
+                tokenizer.process();
+            }
+            if (!parseString(tokenizer))
+            {
+                g_fail = true;
+                return false;
+            }
+            if (tokenizer.getToken().type != TokenType::COLON)
+            {
+                g_fail = true;
+                return false;
+            }
+            printIndented(":");
+            tokenizer.process();
+            if (!parseElement(tokenizer))
+            {
+                g_fail = true;
+                return false;
+            }
+            ++count;
+        }
+        tokenizer.process();
+        --g_level;
+        printIndented("}");
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 bool parseArray(Tokenizer& tokenizer)
 {
-    int count = 0;
-    printIndented("[");
-    ++g_level;
-    tokenizer.process();
-    while (tokenizer.getToken().type != TokenType::ARRAY_END)
+    if (tokenizer.getToken().type == TokenType::ARRAY_START)
     {
-        if (count > 0)
+        int count = 0;
+        printIndented("[");
+        ++g_level;
+        tokenizer.process();
+        while (tokenizer.getToken().type != TokenType::ARRAY_END)
         {
-            if (tokenizer.getToken().type != TokenType::COMMA)
+            if (count > 0)
             {
+                if (tokenizer.getToken().type != TokenType::COMMA)
+                {
+                    g_fail = true;
+                    return false;
+                }
+                printIndented(",");
+                tokenizer.process();
+            }
+            if (!parseElement(tokenizer))
+            {
+                g_fail = true;
                 return false;
             }
-            tokenizer.process();
+            ++count;
         }
-        if (!parseElement(tokenizer))
-        {
-            return false;
-        }
-        ++count;
+        tokenizer.process();
+        --g_level;
+        printIndented("]");
+        return true;
     }
-    --g_level;
-    printIndented("]");
-    return true;
+    else
+    {
+        return false;
+    }
+}
+
+bool parseElement(Tokenizer& tokenizer)
+{
+    return parseBoolean(tokenizer) ||
+           parseNumber(tokenizer) ||
+           parseString(tokenizer) ||
+           parseNull(tokenizer) ||
+           parseArray(tokenizer) ||
+           parseObject(tokenizer);
 }
 
 int main(int argc, char* argv[])
@@ -101,18 +175,14 @@ int main(int argc, char* argv[])
     if (argc != 2)
     {
         std::cerr << "usage: " << argv[0] << "<input>" << std::endl;
-        //std::cerr << std::format("usage: {} <input>\n", argv[0]);
         return 1;
     }
 
-    std::istringstream stream(argv[1]);
+    //std::istringstream stream(argv[1]);
+    std::ifstream stream(argv[1]);
     Tokenizer tokenizer(stream);
 
     tokenizer.process();
-    if (!parseElement(tokenizer))
-    {
-        std::cerr << "parser error" << std::endl;
-    }
 
     /*
     while (tokenizer.process())
@@ -122,9 +192,15 @@ int main(int argc, char* argv[])
     }
     */
 
+    if (!parseElement(tokenizer) || g_fail)
+    {
+        std::cerr << "parser error" << std::endl;
+        return 1;
+    }
     if (tokenizer.fail()) 
     { 
         std::cerr << "tokenizer error" << std::endl;
+        return 1;
     }
 
     return 0;

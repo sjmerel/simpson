@@ -39,9 +39,9 @@ bool Tokenizer::process()
         // TODO floats
         m_token.type = TokenType::NUMBER;
         m_token.value = c;
-        while (std::isdigit(c = m_stream.get()))
+        while (std::isdigit(m_stream.peek()))
         {
-            m_token.value += c;
+            m_token.value += m_stream.get();
         }
     }
     else if (c == 't')
