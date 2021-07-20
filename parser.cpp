@@ -1,5 +1,6 @@
 #include "parser.h"
 #include <iostream>
+#include <sstream>
 
 Parser::Parser(std::istream& stream) :
     m_tokenizer(stream)
@@ -9,6 +10,21 @@ bool Parser::parse()
 {
     m_tokenizer.advance();
     return parseValue();
+}
+
+int Parser::line() const
+{
+    return m_tokenizer.line();
+}
+
+int Parser::column() const
+{
+    return m_tokenizer.column();
+}
+
+int Parser::pos() const
+{
+    return m_tokenizer.pos();
 }
 
 ////////////////////////////////////////
@@ -38,11 +54,23 @@ bool Parser::parseBoolean()
 
 bool Parser::parseNumber()
 {
-    if (!m_fail && m_tokenizer.getToken().type == TokenType::NUMBER)
+    if (!fail() && m_tokenizer.getToken().type == TokenType::NUMBER)
     {
-        printIndented("number: " + m_tokenizer.getToken().value);
-        m_tokenizer.advance();
-        return true;
+        // TODO handle NaN?
+        std::istringstream stream(m_tokenizer.getToken().value);
+        double d;
+        stream >> d;
+        if (!stream || !stream.eof())
+        {
+            m_fail = true;
+            return false;
+        }
+        else
+        {
+            printIndented("number: " + m_tokenizer.getToken().value + " (" + std::to_string(d) + ")");
+            m_tokenizer.advance();
+            return true;
+        }
     }
     else
     {
@@ -52,7 +80,7 @@ bool Parser::parseNumber()
 
 bool Parser::parseString()
 {
-    if (!m_fail && m_tokenizer.getToken().type == TokenType::STRING)
+    if (!fail() && m_tokenizer.getToken().type == TokenType::STRING)
     {
         printIndented("\"" + m_tokenizer.getToken().value + "\"");
         m_tokenizer.advance();
@@ -66,7 +94,7 @@ bool Parser::parseString()
 
 bool Parser::parseNull()
 {
-    if (!m_fail && m_tokenizer.getToken().type == TokenType::NULL_)
+    if (!fail() && m_tokenizer.getToken().type == TokenType::NULL_)
     {
         printIndented("null");
         m_tokenizer.advance();
@@ -80,13 +108,13 @@ bool Parser::parseNull()
 
 bool Parser::parseObject()
 {
-    if (!m_fail && m_tokenizer.getToken().type == TokenType::OBJECT_START)
+    if (!fail() && m_tokenizer.getToken().type == TokenType::OBJECT_START)
     {
         int count = 0;
         printIndented("{");
         ++m_level;
         m_tokenizer.advance();
-        while (!m_fail && m_tokenizer.getToken().type != TokenType::OBJECT_END)
+        while (!fail() && m_tokenizer.getToken().type != TokenType::OBJECT_END)
         {
             if (count > 0)
             {
@@ -130,7 +158,7 @@ bool Parser::parseObject()
 
 bool Parser::parseArray()
 {
-    if (!m_fail && m_tokenizer.getToken().type == TokenType::ARRAY_START)
+    if (!fail() && m_tokenizer.getToken().type == TokenType::ARRAY_START)
     {
         int count = 0;
         printIndented("[");
@@ -174,4 +202,9 @@ bool Parser::parseValue()
            parseNull() ||
            parseArray() ||
            parseObject();
+}
+
+bool Parser::fail() const
+{
+    return m_fail || m_tokenizer.fail();
 }

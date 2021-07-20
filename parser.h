@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tokenizer.h"
+#include "jsonvalue.h"
 #include <iostream>
 
 class Parser
@@ -9,6 +10,10 @@ public:
     Parser(std::istream&);
 
     bool parse();
+
+    int line() const;
+    int column() const;
+    int pos() const;
 
 private:
     Tokenizer m_tokenizer;
@@ -24,5 +29,6 @@ private:
     bool parseObject();
     bool parseValue();
     void printIndented(const std::string&);
+    bool fail() const;
 };
 
