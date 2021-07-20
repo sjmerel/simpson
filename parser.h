@@ -9,7 +9,7 @@ class Parser
 public:
     Parser(std::istream&);
 
-    bool parse();
+    bool parse(JsonValue&);
 
     int line() const;
     int column() const;
@@ -21,14 +21,14 @@ private:
 
     int m_level = 0;
 
-    bool parseBoolean();
-    bool parseNumber();
-    bool parseString();
-    bool parseNull();
-    bool parseArray();
-    bool parseObject();
-    bool parseValue();
-    void printIndented(const std::string&);
+    bool parseBoolean(JsonValue&);
+    bool parseNumber(JsonValue&);
+    bool parseString(JsonValue&);
+    bool parseString(std::string&);
+    bool parseNull(JsonValue&);
+    bool parseArray(JsonValue&);
+    bool parseObject(JsonValue&);
+    bool parseValue(JsonValue&);
     bool fail() const;
 };
 

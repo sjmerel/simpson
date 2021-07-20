@@ -6,10 +6,10 @@ Parser::Parser(std::istream& stream) :
     m_tokenizer(stream)
 {}
 
-bool Parser::parse()
+bool Parser::parse(JsonValue& value)
 {
     m_tokenizer.advance();
-    return parseValue();
+    return parseValue(value);
 }
 
 int Parser::line() const
@@ -29,20 +29,11 @@ int Parser::pos() const
 
 ////////////////////////////////////////
 
-void Parser::printIndented(const std::string& s)
-{
-    for (int i = 0; i < m_level; ++i)
-    {
-        std::cout << "  ";
-    }
-    std::cout << s << std::endl;
-}
-
-bool Parser::parseBoolean()
+bool Parser::parseBoolean(JsonValue& value)
 {
     if (m_tokenizer.getToken().type == TokenType::BOOLEAN)
     {
-        printIndented(m_tokenizer.getToken().value);
+        value = m_tokenizer.getToken().value == "true" ? true : false;
         m_tokenizer.advance();
         return true;
     }
@@ -52,7 +43,7 @@ bool Parser::parseBoolean()
     }
 }
 
-bool Parser::parseNumber()
+bool Parser::parseNumber(JsonValue& value)
 {
     if (!fail() && m_tokenizer.getToken().type == TokenType::NUMBER)
     {
@@ -67,7 +58,7 @@ bool Parser::parseNumber()
         }
         else
         {
-            printIndented("number: " + m_tokenizer.getToken().value + " (" + std::to_string(d) + ")");
+            value = d;
             m_tokenizer.advance();
             return true;
         }
@@ -78,11 +69,25 @@ bool Parser::parseNumber()
     }
 }
 
-bool Parser::parseString()
+bool Parser::parseString(JsonValue& value)
+{
+    std::string str;
+    if (parseString(str))
+    {
+        value = str;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Parser::parseString(std::string& value)
 {
     if (!fail() && m_tokenizer.getToken().type == TokenType::STRING)
     {
-        printIndented("\"" + m_tokenizer.getToken().value + "\"");
+        value = m_tokenizer.getToken().value;
         m_tokenizer.advance();
         return true;
     }
@@ -92,11 +97,11 @@ bool Parser::parseString()
     }
 }
 
-bool Parser::parseNull()
+bool Parser::parseNull(JsonValue& value)
 {
     if (!fail() && m_tokenizer.getToken().type == TokenType::NULL_)
     {
-        printIndented("null");
+        value = JsonValue();
         m_tokenizer.advance();
         return true;
     }
@@ -106,14 +111,14 @@ bool Parser::parseNull()
     }
 }
 
-bool Parser::parseObject()
+bool Parser::parseObject(JsonValue& value)
 {
     if (!fail() && m_tokenizer.getToken().type == TokenType::OBJECT_START)
     {
         int count = 0;
-        printIndented("{");
         ++m_level;
         m_tokenizer.advance();
+        value = JsonValue(JsonValue::Type::OBJECT);
         while (!fail() && m_tokenizer.getToken().type != TokenType::OBJECT_END)
         {
             if (count > 0)
@@ -123,10 +128,13 @@ bool Parser::parseObject()
                     m_fail = true;
                     return false;
                 }
-                printIndented(",");
                 m_tokenizer.advance();
             }
-            if (!parseString())
+
+            std::string key;
+            JsonValue newValue;
+
+            if (!parseString(key))
             {
                 m_fail = true;
                 return false;
@@ -136,9 +144,12 @@ bool Parser::parseObject()
                 m_fail = true;
                 return false;
             }
-            printIndented(":");
             m_tokenizer.advance();
-            if (!parseValue())
+            if (parseValue(newValue))
+            {
+                value.set(key, newValue);
+            }
+            else
             {
                 m_fail = true;
                 return false;
@@ -147,7 +158,6 @@ bool Parser::parseObject()
         }
         m_tokenizer.advance();
         --m_level;
-        printIndented("}");
         return true;
     }
     else
@@ -156,14 +166,14 @@ bool Parser::parseObject()
     }
 }
 
-bool Parser::parseArray()
+bool Parser::parseArray(JsonValue& value)
 {
     if (!fail() && m_tokenizer.getToken().type == TokenType::ARRAY_START)
     {
         int count = 0;
-        printIndented("[");
         ++m_level;
         m_tokenizer.advance();
+        value = JsonValue(JsonValue::Type::ARRAY);
         while (m_tokenizer.getToken().type != TokenType::ARRAY_END)
         {
             if (count > 0)
@@ -173,10 +183,14 @@ bool Parser::parseArray()
                     m_fail = true;
                     return false;
                 }
-                printIndented(",");
                 m_tokenizer.advance();
             }
-            if (!parseValue())
+            JsonValue newValue;
+            if (parseValue(newValue))
+            {
+                value.append(newValue);
+            }
+            else
             {
                 m_fail = true;
                 return false;
@@ -185,7 +199,6 @@ bool Parser::parseArray()
         }
         m_tokenizer.advance();
         --m_level;
-        printIndented("]");
         return true;
     }
     else
@@ -194,14 +207,14 @@ bool Parser::parseArray()
     }
 }
 
-bool Parser::parseValue()
+bool Parser::parseValue(JsonValue& value)
 {
-    return parseBoolean() ||
-           parseNumber() ||
-           parseString() ||
-           parseNull() ||
-           parseArray() ||
-           parseObject();
+    return parseBoolean(value) ||
+           parseNumber(value) ||
+           parseString(value) ||
+           parseNull(value) ||
+           parseArray(value) ||
+           parseObject(value);
 }
 
 bool Parser::fail() const

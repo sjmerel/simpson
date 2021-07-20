@@ -12,9 +12,11 @@ public:
         NUMBER,
         STRING,
         NULL_,
-        OBJECT,
-        ARRAY
+        ARRAY,
+        OBJECT
     };
+
+    JsonValue(); // null
 
     JsonValue(Type);
 
@@ -32,8 +34,9 @@ public:
     double number() const { return m_number; }
     const std::string& string() const { return m_string; }
 
+    int size() const { return (int) (m_type == Type::ARRAY ? m_array.size() : m_object.size()); }
+
     // array
-    int size() const { return m_array.size(); }
     JsonValue& get(int index) { return m_array[index]; }
     const JsonValue& get(int index) const { return m_array[index]; }
     void set(int index, const JsonValue& value);
@@ -43,6 +46,7 @@ public:
     JsonValue& get(const std::string& key) { return m_object.find(key)->second; }
     const JsonValue& get(const std::string& key) const { return m_object.find(key)->second; }
     void set(const std::string& key, const JsonValue& value);
+    const std::string& getKey(int index) const;
 
     // void setBool(bool);
     // void setNumber(double);

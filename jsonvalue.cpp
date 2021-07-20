@@ -1,5 +1,13 @@
 #include "jsonvalue.h"
 
+JsonValue::JsonValue() :
+    m_type(Type::NULL_),
+    m_string(),
+    m_number(0.0),
+    m_array(),
+    m_object()
+{}
+
 JsonValue::JsonValue(Type type) :
     m_type(type),
     m_string(),
@@ -45,4 +53,11 @@ void JsonValue::append(const JsonValue& value)
 void JsonValue::set(const std::string& key, const JsonValue& value)
 {
     m_object.insert(std::make_pair(key, value));
+}
+
+const std::string& JsonValue::getKey(int index) const 
+{ 
+    auto it = m_object.begin();
+    std::advance(it, index);
+    return it->first; 
 }
