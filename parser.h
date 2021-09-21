@@ -19,8 +19,6 @@ private:
     Tokenizer m_tokenizer;
     bool m_fail = false;
 
-    int m_level = 0;
-
     bool parseBoolean(JsonValue&);
     bool parseNumber(JsonValue&);
     bool parseString(JsonValue&);
@@ -31,4 +29,3 @@ private:
     bool parseValue(JsonValue&);
     bool fail() const;
 };
-

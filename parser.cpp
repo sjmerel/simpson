@@ -116,9 +116,8 @@ bool Parser::parseObject(JsonValue& value)
     if (!fail() && m_tokenizer.getToken().type == TokenType::OBJECT_START)
     {
         int count = 0;
-        ++m_level;
         m_tokenizer.advance();
-        value = JsonValue(JsonValue::Type::OBJECT);
+        value = JsonValue(JsonValue::Type::Object);
         while (!fail() && m_tokenizer.getToken().type != TokenType::OBJECT_END)
         {
             if (count > 0)
@@ -157,7 +156,6 @@ bool Parser::parseObject(JsonValue& value)
             ++count;
         }
         m_tokenizer.advance();
-        --m_level;
         return true;
     }
     else
@@ -171,9 +169,8 @@ bool Parser::parseArray(JsonValue& value)
     if (!fail() && m_tokenizer.getToken().type == TokenType::ARRAY_START)
     {
         int count = 0;
-        ++m_level;
         m_tokenizer.advance();
-        value = JsonValue(JsonValue::Type::ARRAY);
+        value = JsonValue(JsonValue::Type::Array);
         while (m_tokenizer.getToken().type != TokenType::ARRAY_END)
         {
             if (count > 0)
@@ -198,7 +195,6 @@ bool Parser::parseArray(JsonValue& value)
             ++count;
         }
         m_tokenizer.advance();
-        --m_level;
         return true;
     }
     else

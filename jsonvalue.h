@@ -2,24 +2,23 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <iostream>
 
 class JsonValue
 {
 public:
     enum class Type
     {
-        BOOL,
-        NUMBER,
-        STRING,
-        NULL_,
-        ARRAY,
-        OBJECT
+        Boolean,
+        Number,
+        String,
+        Null,
+        Array,
+        Object
     };
 
     JsonValue(); // null
-
     JsonValue(Type);
-
     JsonValue(bool);
     JsonValue(double);
     JsonValue(const std::string&);
@@ -29,16 +28,25 @@ public:
     // TODO move?
 
     Type type() const { return m_type; }
+    bool isBoolean() const { return m_type == Type::Boolean; }
+    bool isNumber() const { return m_type == Type::Number; }
+    bool isString() const { return m_type == Type::String; }
+    bool isNull() const { return m_type == Type::Null; }
+    bool isArray() const { return m_type == Type::Array; }
+    bool isObject() const { return m_type == Type::Object; }
 
-    bool boolean() const { return m_number; }
+    bool boolean() const { return bool(m_number); }
     double number() const { return m_number; }
     const std::string& string() const { return m_string; }
 
-    int size() const { return (int) (m_type == Type::ARRAY ? m_array.size() : m_object.size()); }
+    // array/object
+    int size() const { return (int) (m_type == Type::Array ? m_array.size() : m_object.size()); }
 
     // array
     JsonValue& get(int index) { return m_array[index]; }
     const JsonValue& get(int index) const { return m_array[index]; }
+    JsonValue& operator[](int index) { return m_array[index]; }
+    const JsonValue& operator[](int index) const { return m_array[index]; }
     void set(int index, const JsonValue& value);
     void append(const JsonValue& value);
 
@@ -48,9 +56,8 @@ public:
     void set(const std::string& key, const JsonValue& value);
     const std::string& getKey(int index) const;
 
-    // void setBool(bool);
-    // void setNumber(double);
-    // void setSt(double);
+    bool readText(std::istream&);
+    void writeText(std::ostream&, bool compact = false) const;
 
 private:
     Type m_type;

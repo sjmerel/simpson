@@ -1,7 +1,9 @@
 #include "jsonvalue.h"
+#include "parser.h"
+#include "writer.h"
 
 JsonValue::JsonValue() :
-    m_type(Type::NULL_),
+    m_type(Type::Null),
     m_string(),
     m_number(0.0),
     m_array(),
@@ -17,7 +19,7 @@ JsonValue::JsonValue(Type type) :
 {}
 
 JsonValue::JsonValue(bool value) :
-    m_type(Type::BOOL),
+    m_type(Type::Boolean),
     m_string(),
     m_number(value),
     m_array(),
@@ -25,7 +27,7 @@ JsonValue::JsonValue(bool value) :
 {}
 
 JsonValue::JsonValue(double value) :
-    m_type(Type::NUMBER),
+    m_type(Type::Number),
     m_string(),
     m_number(value),
     m_array(),
@@ -33,7 +35,7 @@ JsonValue::JsonValue(double value) :
 {}
 
 JsonValue::JsonValue(const std::string& value) :
-    m_type(Type::STRING),
+    m_type(Type::String),
     m_string(value),
     m_number(0.0),
     m_array(),
@@ -60,4 +62,20 @@ const std::string& JsonValue::getKey(int index) const
     auto it = m_object.begin();
     std::advance(it, index);
     return it->first; 
+}
+
+bool JsonValue::readText(std::istream& stream)
+{
+    Parser parser(stream);
+    return parser.parse(*this);
+}
+
+void JsonValue::writeText(std::ostream& stream, bool compact) const
+{
+    Writer writer(stream);
+    if (compact)
+    {
+        writer.setIndent(0);
+    }
+    writer.write(*this);
 }
