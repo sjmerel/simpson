@@ -5,13 +5,14 @@ using namespace Simpson;
 
 #define VERIFY(expr) if (!(expr)) \
 { \
-    std::cerr << "**** ERROR: line " <<  __LINE__ << std::endl; \
-    std::cerr << #expr << std::endl; \
+    std::cerr << "**** ERROR: line " <<  __LINE__ << ": " << #expr << std::endl; \
     return 1; \
 }
 
 int main()
 {
+    std::cout << "testing..." << std::endl;
+
     std::ifstream stream("test.json");
 
     JsonValue value;
@@ -52,6 +53,17 @@ int main()
     VERIFY(value[20].size() == 0);
     VERIFY(value[21].isArray());
     VERIFY(value[21].size() == 0);
+    VERIFY(value[22].isArray());
+    VERIFY(value[22].size() == 0);
 
+    VERIFY(value[23].isObject());
+    VERIFY(value[23].size() == 0);
+    VERIFY(value[24].isObject());
+    VERIFY(value[24].size() == 0);
+    VERIFY(value[25].isObject());
+    VERIFY(value[25].size() == 0);
+
+    std::cout << "...done" << std::endl;
+   
     return 0;
 }
