@@ -3,6 +3,9 @@
 #include <iostream>
 #include <sstream>
 
+namespace Simpson 
+{
+
 Reader::Reader(std::istream& stream) :
     m_tokenizer(new Tokenizer(stream))
 {}
@@ -223,3 +226,5 @@ bool Reader::fail() const
 {
     return m_fail || m_tokenizer->fail();
 }
+
+} // namespace Simpson

@@ -1,6 +1,9 @@
 #include "simpson/writer.h"
 #include <iomanip>
 
+namespace Simpson 
+{
+
 namespace
 {
     std::string escape(const std::string& s)
@@ -135,3 +138,5 @@ void Writer::writeImpl(const JsonValue& value, int level, const std::string& pre
             break;
     }
 }
+
+} // namespace Simpson

@@ -3,6 +3,10 @@
 #include "simpson/jsonvalue.h"
 #include <iostream>
 
+namespace Simpson 
+{
+
+
 class Tokenizer;
 
 class Reader
@@ -34,3 +38,6 @@ private:
     bool parseValue(JsonValue&);
     bool fail() const;
 };
+
+
+} // namespace Simpson

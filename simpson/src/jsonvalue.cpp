@@ -2,6 +2,9 @@
 #include "simpson/reader.h"
 #include "simpson/writer.h"
 
+namespace Simpson 
+{
+
 JsonValue::JsonValue() :
     m_type(Type::Null),
     m_string(),
@@ -79,3 +82,5 @@ void JsonValue::writeText(std::ostream& stream, bool compact) const
     }
     writer.write(*this);
 }
+
+} // namespace Simpson

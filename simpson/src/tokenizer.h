@@ -4,6 +4,9 @@
 #include <string>
 #include <iostream>
 
+namespace Simpson 
+{
+
 class Tokenizer
 {
 public:
@@ -31,3 +34,4 @@ private:
     void readString();
 };
 
+} // namespace Simpson

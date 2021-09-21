@@ -1,8 +1,13 @@
 #pragma once
+
 #include <vector>
 #include <string>
 #include <map>
 #include <iostream>
+
+namespace Simpson 
+{
+
 
 class JsonValue
 {
@@ -68,3 +73,6 @@ private:
     std::vector<JsonValue> m_array;
     std::map<std::string, JsonValue> m_object;
 };
+
+
+} // namespace Simpson

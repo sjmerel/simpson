@@ -1,6 +1,9 @@
 #include "simpson/src/tokenizer.h"
 #include <iostream>
 
+namespace Simpson 
+{
+
 namespace
 {
     // not using std::isspace() because it is more permissive
@@ -210,3 +213,5 @@ void Tokenizer::readString()
         m_fail = true;
     }
 }
+
+} // namespace Simpson

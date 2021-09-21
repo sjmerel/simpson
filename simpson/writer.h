@@ -3,6 +3,10 @@
 #include "simpson/jsonvalue.h"
 #include <iostream>
 
+namespace Simpson 
+{
+
+
 class Writer
 {
 public:
@@ -19,3 +23,6 @@ private:
     void writeIndent(int level);
     void writeImpl(const JsonValue&, int level = 0, const std::string& prefix = "");
 };
+
+
+} // namespace Simpson

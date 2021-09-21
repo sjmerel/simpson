@@ -1,5 +1,8 @@
 #pragma once
 
+namespace Simpson 
+{
+
 enum class TokenType
 {
     STRING,
@@ -13,3 +16,5 @@ enum class TokenType
     COLON,
     COMMA,
 };
+
+} // namespace Simpson

@@ -1,6 +1,8 @@
 #include "simpson/jsonvalue.h"
 #include <fstream>
 
+using namespace Simpson;
+
 #define VERIFY(expr) if (!(expr)) \
 { \
     std::cerr << "**** ERROR: line " <<  __LINE__ << std::endl; \
