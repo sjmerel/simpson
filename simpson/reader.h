@@ -5,11 +5,11 @@
 
 class Tokenizer;
 
-class Parser
+class Reader
 {
 public:
-    Parser(std::istream&);
-    ~Parser();
+    Reader(std::istream&);
+    ~Reader();
 
     bool parse(JsonValue&);
 
@@ -18,8 +18,8 @@ public:
     int pos() const;
 
 private:
-    Parser& operator=(const Parser&);
-    Parser(const Parser&);
+    Reader& operator=(const Reader&);
+    Reader(const Reader&);
 
     Tokenizer* m_tokenizer;
     bool m_fail = false;

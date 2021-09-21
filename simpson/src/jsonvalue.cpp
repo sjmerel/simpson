@@ -1,5 +1,5 @@
 #include "simpson/jsonvalue.h"
-#include "simpson/parser.h"
+#include "simpson/reader.h"
 #include "simpson/writer.h"
 
 JsonValue::JsonValue() :
@@ -66,8 +66,8 @@ const std::string& JsonValue::getKey(int index) const
 
 bool JsonValue::readText(std::istream& stream)
 {
-    Parser parser(stream);
-    return parser.parse(*this);
+    Reader reader(stream);
+    return reader.parse(*this);
 }
 
 void JsonValue::writeText(std::ostream& stream, bool compact) const
