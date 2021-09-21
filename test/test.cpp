@@ -1,10 +1,12 @@
-#include "jsonvalue.h"
+#include "simpson/jsonvalue.h"
 #include <fstream>
 
-#define VERIFY(expr) if (!(expr)) { \
+#define VERIFY(expr) if (!(expr)) \
+{ \
     std::cerr << "**** ERROR: line " <<  __LINE__ << std::endl; \
     std::cerr << #expr << std::endl; \
-    return 1; }
+    return 1; \
+}
 
 int main()
 {

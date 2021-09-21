@@ -1,6 +1,6 @@
-#include "jsonvalue.h"
-#include "parser.h"
-#include "writer.h"
+#include "simpson/jsonvalue.h"
+#include "simpson/parser.h"
+#include "simpson/writer.h"
 
 JsonValue::JsonValue() :
     m_type(Type::Null),

@@ -1,4 +1,4 @@
-#include "writer.h"
+#include "simpson/writer.h"
 #include <iomanip>
 
 namespace

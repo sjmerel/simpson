@@ -1,40 +1,46 @@
-#include "parser.h"
+#include "simpson/parser.h"
+#include "simpson/src/tokenizer.h"
 #include <iostream>
 #include <sstream>
 
 Parser::Parser(std::istream& stream) :
-    m_tokenizer(stream)
+    m_tokenizer(new Tokenizer(stream))
 {}
+
+Parser::~Parser()
+{
+    delete m_tokenizer;
+}
 
 bool Parser::parse(JsonValue& value)
 {
-    m_tokenizer.advance();
+    m_tokenizer->advance();
     return parseValue(value);
 }
 
 int Parser::line() const
 {
-    return m_tokenizer.line();
+    return m_tokenizer->line();
 }
 
 int Parser::column() const
 {
-    return m_tokenizer.column();
+    return m_tokenizer->column();
 }
 
 int Parser::pos() const
 {
-    return m_tokenizer.pos();
+    return m_tokenizer->pos();
 }
 
 ////////////////////////////////////////
 
 bool Parser::parseBoolean(JsonValue& value)
 {
-    if (m_tokenizer.getToken().type == TokenType::BOOLEAN)
+    if (m_tokenizer->getToken().type == TokenType::BOOLEAN)
     {
-        value = m_tokenizer.getToken().value == "true" ? true : false;
-        m_tokenizer.advance();
+        value = m_tokenizer->getToken().value == "true" ? true : false;
+        m_tokenizer->advance();
         return true;
     }
     else
@@ -45,10 +51,10 @@ bool Parser::parseBoolean(JsonValue& value)
 
 bool Parser::parseNumber(JsonValue& value)
 {
-    if (!fail() && m_tokenizer.getToken().type == TokenType::NUMBER)
+    if (!fail() && m_tokenizer->getToken().type == TokenType::NUMBER)
     {
         // TODO handle NaN?
-        std::istringstream stream(m_tokenizer.getToken().value);
+        std::istringstream stream(m_tokenizer->getToken().value);
         double d;
         stream >> d;
         if (!stream || !stream.eof())
@@ -59,7 +65,7 @@ bool Parser::parseNumber(JsonValue& value)
         else
         {
             value = d;
-            m_tokenizer.advance();
+            m_tokenizer->advance();
             return true;
         }
     }
@@ -85,10 +91,10 @@ bool Parser::parseString(JsonValue& value)
 
 bool Parser::parseString(std::string& value)
 {
-    if (!fail() && m_tokenizer.getToken().type == TokenType::STRING)
+    if (!fail() && m_tokenizer->getToken().type == TokenType::STRING)
     {
-        value = m_tokenizer.getToken().value;
-        m_tokenizer.advance();
+        value = m_tokenizer->getToken().value;
+        m_tokenizer->advance();
         return true;
     }
     else
@@ -99,10 +105,10 @@ bool Parser::parseString(std::string& value)
 
 bool Parser::parseNull(JsonValue& value)
 {
-    if (!fail() && m_tokenizer.getToken().type == TokenType::NULL_)
+    if (!fail() && m_tokenizer->getToken().type == TokenType::NULL_)
     {
         value = JsonValue();
-        m_tokenizer.advance();
+        m_tokenizer->advance();
         return true;
     }
     else
@@ -113,21 +119,21 @@ bool Parser::parseNull(JsonValue& value)
 
 bool Parser::parseObject(JsonValue& value)
 {
-    if (!fail() && m_tokenizer.getToken().type == TokenType::OBJECT_START)
+    if (!fail() && m_tokenizer->getToken().type == TokenType::OBJECT_START)
     {
         int count = 0;
-        m_tokenizer.advance();
+        m_tokenizer->advance();
         value = JsonValue(JsonValue::Type::Object);
-        while (!fail() && m_tokenizer.getToken().type != TokenType::OBJECT_END)
+        while (!fail() && m_tokenizer->getToken().type != TokenType::OBJECT_END)
         {
             if (count > 0)
             {
-                if (m_tokenizer.getToken().type != TokenType::COMMA)
+                if (m_tokenizer->getToken().type != TokenType::COMMA)
                 {
                     m_fail = true;
                     return false;
                 }
-                m_tokenizer.advance();
+                m_tokenizer->advance();
             }
 
             std::string key;
@@ -138,12 +144,12 @@ bool Parser::parseObject(JsonValue& value)
                 m_fail = true;
                 return false;
             }
-            if (m_tokenizer.getToken().type != TokenType::COLON)
+            if (m_tokenizer->getToken().type != TokenType::COLON)
             {
                 m_fail = true;
                 return false;
             }
-            m_tokenizer.advance();
+            m_tokenizer->advance();
             if (parseValue(newValue))
             {
                 value.set(key, newValue);
@@ -155,7 +161,7 @@ bool Parser::parseObject(JsonValue& value)
             }
             ++count;
         }
-        m_tokenizer.advance();
+        m_tokenizer->advance();
         return true;
     }
     else
@@ -166,21 +172,21 @@ bool Parser::parseObject(JsonValue& value)
 
 bool Parser::parseArray(JsonValue& value)
 {
-    if (!fail() && m_tokenizer.getToken().type == TokenType::ARRAY_START)
+    if (!fail() && m_tokenizer->getToken().type == TokenType::ARRAY_START)
     {
         int count = 0;
-        m_tokenizer.advance();
+        m_tokenizer->advance();
         value = JsonValue(JsonValue::Type::Array);
-        while (m_tokenizer.getToken().type != TokenType::ARRAY_END)
+        while (m_tokenizer->getToken().type != TokenType::ARRAY_END)
         {
             if (count > 0)
             {
-                if (m_tokenizer.getToken().type != TokenType::COMMA)
+                if (m_tokenizer->getToken().type != TokenType::COMMA)
                 {
                     m_fail = true;
                     return false;
                 }
-                m_tokenizer.advance();
+                m_tokenizer->advance();
             }
             JsonValue newValue;
             if (parseValue(newValue))
@@ -194,7 +200,7 @@ bool Parser::parseArray(JsonValue& value)
             }
             ++count;
         }
-        m_tokenizer.advance();
+        m_tokenizer->advance();
         return true;
     }
     else
@@ -215,5 +221,5 @@ bool Parser::parseValue(JsonValue& value)
 
 bool Parser::fail() const
 {
-    return m_fail || m_tokenizer.fail();
+    return m_fail || m_tokenizer->fail();
 }

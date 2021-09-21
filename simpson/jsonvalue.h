@@ -28,6 +28,8 @@ public:
     // TODO move?
 
     Type type() const { return m_type; }
+
+    // equivalent to comparing return value of type(), but more concise:
     bool isBoolean() const { return m_type == Type::Boolean; }
     bool isNumber() const { return m_type == Type::Number; }
     bool isString() const { return m_type == Type::String; }

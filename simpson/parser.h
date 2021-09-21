@@ -1,13 +1,15 @@
 #pragma once
 
-#include "tokenizer.h"
-#include "jsonvalue.h"
+#include "simpson/jsonvalue.h"
 #include <iostream>
+
+class Tokenizer;
 
 class Parser
 {
 public:
     Parser(std::istream&);
+    ~Parser();
 
     bool parse(JsonValue&);
 
@@ -16,7 +18,10 @@ public:
     int pos() const;
 
 private:
-    Tokenizer m_tokenizer;
+    Parser& operator=(const Parser&);
+    Parser(const Parser&);
+
+    Tokenizer* m_tokenizer;
     bool m_fail = false;
 
     bool parseBoolean(JsonValue&);
