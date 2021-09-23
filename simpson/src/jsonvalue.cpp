@@ -110,28 +110,115 @@ bool JsonValue::operator!=(const JsonValue& other) const
     return !(*this == other);
 }
 
+bool JsonValue::boolean() const
+{
+    assertType(Type::Boolean);
+    return bool(m_number);
+}
+
+double JsonValue::number() const 
+{ 
+    assertType(Type::Number);
+    return m_number; 
+}
+
+const std::string& JsonValue::string() const 
+{ 
+    assertType(Type::String);
+    return m_string; 
+}
+
+int JsonValue::size() const
+{
+    if (m_type == Type::Array)
+    {
+        return (int) m_array.size();
+    }
+    else if (m_type == Type::Object)
+    {
+        return (int) m_object.size();
+    }
+    else
+    {
+        throw std::runtime_error("incorrect JSON type"); 
+    }
+}
+
+JsonValue& JsonValue::get(int index)
+{
+    assertType(Type::Array);
+    return m_array[index];
+}
+
+const JsonValue& JsonValue::get(int index) const
+{
+    assertType(Type::Array);
+    return m_array[index];
+}
+
+JsonValue& JsonValue::operator[](int index)
+{
+    assertType(Type::Array);
+    return m_array[index];
+}
+
+const JsonValue& JsonValue::operator[](int index) const
+{
+    assertType(Type::Array);
+    return m_array[index];
+}
+
 void JsonValue::set(int index, const JsonValue& value)
 {
+    assertType(Type::Array);
     m_array[index] = value;
 }
 
 void JsonValue::append(const JsonValue& value)
 {
+    assertType(Type::Array);
     m_array.push_back(value);
+}
+
+JsonValue& JsonValue::get(const std::string& key)
+{
+    assertType(Type::Object);
+    return m_object.find(key)->second;
+}
+
+const JsonValue& JsonValue::get(const std::string& key) const
+{
+    assertType(Type::Object);
+    return m_object.find(key)->second;
+}
+
+JsonValue& JsonValue::operator[](const std::string& key)
+{
+    assertType(Type::Object);
+    return get(key);
+}
+
+const JsonValue& JsonValue::operator[](const std::string& key) const
+{
+    assertType(Type::Object);
+    return get(key);
 }
 
 void JsonValue::set(const std::string& key, const JsonValue& value)
 {
+    assertType(Type::Object);
     m_object.insert(std::make_pair(key, value));
 }
 
 bool JsonValue::containsKey(const std::string& key) const
 {
+    assertType(Type::Object);
     return m_object.find(key) != m_object.end();
 }
 
 const std::string& JsonValue::getKey(int index) const 
 { 
+    assertType(Type::Object);
     auto it = m_object.begin();
     std::advance(it, index);
     return it->first; 
@@ -151,6 +238,16 @@ void JsonValue::writeText(std::ostream& stream, bool compact) const
         writer.setIndent(0);
     }
     writer.write(*this);
+}
+
+////////////////////////////////////////
+
+void JsonValue::assertType(JsonValue::Type type) const
+{
+    if (m_type != type) 
+    { 
+        throw std::runtime_error("incorrect JSON type"); 
+    }
 }
 
 } // namespace Simpson

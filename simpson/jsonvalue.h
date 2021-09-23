@@ -48,26 +48,26 @@ public:
     bool isArray() const { return m_type == Type::Array; }
     bool isObject() const { return m_type == Type::Object; }
 
-    bool boolean() const { return bool(m_number); }
-    double number() const { return m_number; }
-    const std::string& string() const { return m_string; }
+    bool boolean() const;
+    double number() const;
+    const std::string& string() const;
 
     // array/object
-    int size() const { return (int) (m_type == Type::Array ? m_array.size() : m_object.size()); }
+    int size() const;
 
     // array
-    JsonValue& get(int index) { return m_array[index]; }
-    const JsonValue& get(int index) const { return m_array[index]; }
-    JsonValue& operator[](int index) { return m_array[index]; }
-    const JsonValue& operator[](int index) const { return m_array[index]; }
+    JsonValue& get(int index);
+    const JsonValue& get(int index) const;
+    JsonValue& operator[](int index);
+    const JsonValue& operator[](int index) const;
     void set(int index, const JsonValue& value);
     void append(const JsonValue& value);
 
     // object
-    JsonValue& get(const std::string& key) { return m_object.find(key)->second; }
-    const JsonValue& get(const std::string& key) const { return m_object.find(key)->second; }
-    JsonValue& operator[](const std::string& key) { return get(key); }
-    const JsonValue& operator[](const std::string& key) const { return get(key); }
+    JsonValue& get(const std::string& key);
+    const JsonValue& get(const std::string& key) const;
+    JsonValue& operator[](const std::string& key);
+    const JsonValue& operator[](const std::string& key) const;
     void set(const std::string& key, const JsonValue& value);
     bool containsKey(const std::string& key) const;
     const std::string& getKey(int index) const;
@@ -81,6 +81,8 @@ private:
     double m_number; // or bool
     std::vector<JsonValue> m_array;
     std::map<std::string, JsonValue> m_object;
+
+    void assertType(Type) const;
 };
 
 
