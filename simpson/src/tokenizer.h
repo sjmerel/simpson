@@ -32,6 +32,7 @@ private:
     void readLiteral(const std::string& literalValue);
     void readNumber();
     void readString();
+    void readEscape();
     void readUnicodeEscape();
 };
 

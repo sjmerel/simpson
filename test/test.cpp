@@ -28,7 +28,7 @@ int main()
         VERIFY(value[0].string() == "hello");
         VERIFY(value[1].string() == "hello\"");
         VERIFY(value[2].string() == "hello\\");
-        VERIFY(value[3].string() == "\" \\ / / \b \f \n \r \t * ☺ 😀");
+        VERIFY(value[3].string() == "\" \\ / / \b \f \n \r \t * ☺ 😀 😀 ☺☺");
 
         VERIFY(value[4].isNull());
 

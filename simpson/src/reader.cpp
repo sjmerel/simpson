@@ -56,7 +56,9 @@ bool Reader::parseNumber(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::NUMBER)
     {
-        // TODO optionally handle NaN/Infinity/-Infinity ?
+        // TODO optionally handle NaN/Infinity/-Infinity?
+        //  note that C printf standard is nan/inf/-inf, or NAN/INF/-INF, while the Java standard is 
+        //  NaN/Infinity/-Infinity, and other languages are probably different.
         std::istringstream stream(m_tokenizer->getToken().value);
         double d;
         stream >> d;

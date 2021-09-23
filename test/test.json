@@ -3,7 +3,7 @@
   "hello",
   "hello\"",
   "hello\\",
-  "\" \\ \/ / \b \f \n \r \t \u002a \u263a 😀",
+  "\" \\ \/ / \b \f \n \r \t \u002a \u263a 😀 \uD83D\uDE00 \u263a\u263a",
 
   null,
 

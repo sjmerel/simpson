@@ -22,6 +22,36 @@ namespace
     {
         return c >= '0' && c <= '9';
     }
+
+    // parse 4-character hex value; return -1 if invalid
+    int parseHex4(const char* buf)
+    {
+        unsigned int value = 0;
+        for (int i = 0; i < 4; ++i)
+        {
+            char c = buf[i];
+            unsigned int v = 0;
+            if (c >= '0' && c <= '9')
+            {
+                v = c - '0';
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                v = 10 + (c - 'a');
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                v = 10 + (c - 'A');
+            }
+            else
+            {
+                return -1;
+            }
+
+            value |= (v << (3-i)*4);
+        }
+        return value;
+    }
 }
 
 ////////////////////////////////////////
@@ -143,9 +173,11 @@ void Tokenizer::readNumber()
     }
 }
 
+
 void Tokenizer::readUnicodeEscape()
 {
     char buf[4];
+
     m_stream.read(buf, 4);
     if (m_stream.eof())
     {
@@ -153,31 +185,62 @@ void Tokenizer::readUnicodeEscape()
         return;
     }
 
-    int value = 0;
-    for (int i = 0; i < 4; ++i)
+    // parse hex
+    int value1 = parseHex4(buf);
+    if (value1 < 0) 
     {
-        char c = buf[i];
-        int v = 0;
-        if (c >= '0' && c <= '9')
+        m_fail = true;
+        return;
+    }
+
+    unsigned int value = value1;
+
+    if (value >= 0xd800 && value <= 0xdbff)
+    {
+        // the unicode escape was a UTF-16 "high surrogate" (i.e. the first of a UTF-16 surrogate pair).
+        // look ahead to see if we have a second unicode escape
+        if (m_stream.get() == '\\')
         {
-            v = c - '0';
-        }
-        else if (c >= 'a' && c <= 'f')
-        {
-            v = 10 + (c - 'a');
-        }
-        else if (c >= 'A' && c <= 'F')
-        {
-            v = 10 + (c - 'A');
+            if (m_stream.get() == 'u')
+            {
+                m_stream.read(buf, 4);
+                if (m_stream.eof())
+                {
+                    m_fail = true;
+                    return;
+                }
+
+                int value2 = parseHex4(buf);
+                if (value2 < 0)
+                {
+                    m_fail = true;
+                    return;
+                }
+
+                if (value2 >= 0xdc00 && value2 <= 0xdfff)
+                {
+                    // decode UTF-16
+                    value = (((value1 - 0xd800) << 10) | (value2 - 0xdc00)) + 0x10000;
+                }
+                else
+                {
+                    // the second escape is not a valid UTF-16 "low surrogate", so it's not a valid UTF-16 pair.
+                    // this is almost definitely a mistake, but is not invalid JSON, so we'll interpret both escapes as UTF-8,
+                    // even though they're not printable characters.
+                    for (int i = 0; i < 6; ++i) { m_stream.unget(); }
+                }
+            }
+            else
+            {
+                m_stream.unget();
+            }
         }
         else
         {
-            m_fail = true;
-            break;
+            m_stream.unget();
         }
-
-        value |= (v << (3-i)*4);
     }
+
 
     // UTF-8 encode
     if (value <= 0x7f)
@@ -186,12 +249,22 @@ void Tokenizer::readUnicodeEscape()
     }
     else if (value <= 0x7ff)
     {
+        // 0xxx xxxx xxxx -> 110xxxxx 10xxxxxx  (11 bits -> 16 bits)
         m_token.value += (char) (0xc0 | (value >> 6));
         m_token.value += (char) (0x80 | (value & 0x3f));
     }
-    else // if (value <= 0xffff)
+    else if (value <= 0xffff)
     {
+        // xxxx xxxx xxxx xxxx -> 1110xxxx 10xxxxxx 10xxxxxx (16 bits -> 24 bits)
         m_token.value += (char) (0xe0 | (value >> 12));
+        m_token.value += (char) (0x80 | ((value >> 6) & 0x3f));
+        m_token.value += (char) (0x80 | (value & 0x3f));
+    }
+    else
+    {
+        // 000x xxxx xxxx xxxx xxxx xxxx -> 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx (21 bits -> 32 bits)
+        m_token.value += (char) (0xf0 | (value >> 18));
+        m_token.value += (char) (0x80 | ((value >> 12) & 0x3f));
         m_token.value += (char) (0x80 | ((value >> 6) & 0x3f));
         m_token.value += (char) (0x80 | (value & 0x3f));
     }
@@ -202,45 +275,17 @@ void Tokenizer::readString()
     char c = 0;
     m_token.value.clear(); // skip quote
 
-    bool escaping = false;
     while (!m_fail && !m_stream.eof())
     {
         c = m_stream.get();
-        if (escaping)
+        if (c == '\\')
         {
-            switch (c)
-            {
-                case '"': 
-                case '\\':
-                case '/':
-                    m_token.value += c; 
-                    break;
-
-                case 'b':
-                    m_token.value += '\b';
-                    break;
-                case 'f':
-                    m_token.value += '\f';
-                    break;
-                case 'n':
-                    m_token.value += '\n';
-                    break;
-                case 'r':
-                    m_token.value += '\r';
-                    break;
-                case 't':
-                    m_token.value += '\t';
-                    break;
-
-                case 'u': 
-                    readUnicodeEscape();
-                    break;
-
-                default:
-                    m_fail = true;
-                    break;
-            }
-            escaping = false;
+            readEscape();
+        }
+        else if (c >= 0x0 && c <= 0x1f)
+        {
+            // check for unescaped U+0000 through U+001F
+            m_fail = true;
         }
         else if (c == '"')
         {
@@ -249,26 +294,51 @@ void Tokenizer::readString()
         }
         else
         {
-            if (c == '\\')
-            {
-                // start an escape sequence
-                escaping = true;
-            }
-            else if (c >= 0x0 && c <= 0x1f)
-            {
-                // check for unescaped U+0000 through U+001F
-                m_fail = true;
-            }
-            else
-            {
-                m_token.value += c;
-            }
+            m_token.value += c;
         }
     }
+
     if (c != '"')
     {
         // we hit EOF before the string was closed
         m_fail = true;
+    }
+}
+
+void Tokenizer::readEscape()
+{
+    char c = m_stream.get();
+    switch (c)
+    {
+        case '"': 
+        case '\\':
+        case '/':
+            m_token.value += c; 
+            break;
+
+        case 'b':
+            m_token.value += '\b';
+            break;
+        case 'f':
+            m_token.value += '\f';
+            break;
+        case 'n':
+            m_token.value += '\n';
+            break;
+        case 'r':
+            m_token.value += '\r';
+            break;
+        case 't':
+            m_token.value += '\t';
+            break;
+
+        case 'u': 
+            readUnicodeEscape();
+            break;
+
+        default:
+            m_fail = true;
+            break;
     }
 }
 
