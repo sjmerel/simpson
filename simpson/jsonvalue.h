@@ -22,11 +22,17 @@ public:
         Object
     };
 
-    JsonValue(); // null
+    JsonValue(nullptr_t = nullptr); // null
     JsonValue(Type);
     JsonValue(bool);
     JsonValue(double);
+    JsonValue(int);
+    JsonValue(const char*); // note that a null pointer here will result in a value of type Null, not String
     JsonValue(const std::string&);
+
+    // value equality
+    bool operator==(const JsonValue&) const;
+    bool operator!=(const JsonValue&) const;
 
     // JsonValue(const JsonValue&);
     // JsonValue& operator=(const JsonValue&);
@@ -60,7 +66,10 @@ public:
     // object
     JsonValue& get(const std::string& key) { return m_object.find(key)->second; }
     const JsonValue& get(const std::string& key) const { return m_object.find(key)->second; }
+    JsonValue& operator[](const std::string& key) { return get(key); }
+    const JsonValue& operator[](const std::string& key) const { return get(key); }
     void set(const std::string& key, const JsonValue& value);
+    bool containsKey(const std::string& key) const;
     const std::string& getKey(int index) const;
 
     bool readText(std::istream&);

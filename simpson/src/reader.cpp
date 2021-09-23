@@ -15,7 +15,7 @@ Reader::~Reader()
     delete m_tokenizer;
 }
 
-bool Reader::parse(JsonValue& value)
+bool Reader::read(JsonValue& value)
 {
     m_tokenizer->advance();
     return parseValue(value);
@@ -56,7 +56,7 @@ bool Reader::parseNumber(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::NUMBER)
     {
-        // TODO handle NaN?
+        // TODO optionally handle NaN/Infinity/-Infinity ?
         std::istringstream stream(m_tokenizer->getToken().value);
         double d;
         stream >> d;

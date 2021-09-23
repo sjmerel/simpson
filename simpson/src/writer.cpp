@@ -9,7 +9,7 @@ namespace
     std::string escape(const std::string& s)
     {
         std::string result = s;
-        for (int i = 0; i < s.length(); ++i)
+        for (int i = 0; i < result.length(); ++i)
         {
             std::string repl;
             switch (result[i])
@@ -35,10 +35,12 @@ namespace
                 case '\t':
                     repl = "\\t";
                     break;
-                    // case '/':
+
+                // TODO: optionally escape forward slash
+                // TODO: optionally escape unicode chars > U+007f
+
                 default: 
                     break;
-                    // TODO unicode
             }
             if (!repl.empty())
             {
@@ -109,7 +111,11 @@ void Writer::writeImpl(const JsonValue& value, int level, const std::string& pre
                 for (int i = 0; i < value.size(); ++i)
                 {
                     writeImpl(value.get(i), level+1);
-                    m_stream << "," << std::endl;;
+                    if (i < value.size()-1)
+                    {
+                        m_stream << ",";
+                    }
+                    m_stream << std::endl;
                 }
                 writeIndent(level);
                 m_stream << "]";
@@ -130,7 +136,11 @@ void Writer::writeImpl(const JsonValue& value, int level, const std::string& pre
                     const JsonValue& keyValue = value.get(key);
                     std::string prefix = "\"" + key + "\": ";
                     writeImpl(keyValue, level+1, prefix);
-                    m_stream << "," << std::endl;
+                    if (i < value.size()-1)
+                    {
+                        m_stream << ",";
+                    }
+                    m_stream << std::endl;
                 }
                 writeIndent(level);
                 m_stream << "}";

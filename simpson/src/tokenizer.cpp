@@ -1,6 +1,8 @@
 #include "simpson/src/tokenizer.h"
 #include <iostream>
 
+// see: https://www.json.org/json-en.html
+
 namespace Simpson 
 {
 
@@ -133,11 +135,65 @@ void Tokenizer::readLiteral(const std::string& literalValue)
 
 void Tokenizer::readNumber()
 {
-    // TODO handle NaN/Infinity/-Infinity as an extension?
+    // TODO optionally handle NaN/Infinity/-Infinity?
     char c;
     while ((isDigit(c = m_stream.peek())) || c == '-' || c == '+' || c == 'e' || c == 'E' || c == '.')
     {
         m_token.value += m_stream.get();
+    }
+}
+
+void Tokenizer::readUnicodeEscape()
+{
+    char buf[4];
+    m_stream.read(buf, 4);
+    if (m_stream.eof())
+    {
+        m_fail = true;
+        return;
+    }
+
+    int value = 0;
+    for (int i = 0; i < 4; ++i)
+    {
+        char c = buf[i];
+        int v = 0;
+        if (c >= '0' && c <= '9')
+        {
+            v = c - '0';
+        }
+        else if (c >= 'a' && c <= 'f')
+        {
+            v = 10 + (c - 'a');
+        }
+        else if (c >= 'A' && c <= 'F')
+        {
+            v = 10 + (c - 'A');
+        }
+        else
+        {
+            m_fail = true;
+            break;
+        }
+
+        value |= (v << (3-i)*4);
+    }
+
+    // UTF-8 encode
+    if (value <= 0x7f)
+    {
+        m_token.value += (char) value;
+    }
+    else if (value <= 0x7ff)
+    {
+        m_token.value += (char) (0xc0 | (value >> 6));
+        m_token.value += (char) (0x80 | (value & 0x3f));
+    }
+    else // if (value <= 0xffff)
+    {
+        m_token.value += (char) (0xe0 | (value >> 12));
+        m_token.value += (char) (0x80 | ((value >> 6) & 0x3f));
+        m_token.value += (char) (0x80 | (value & 0x3f));
     }
 }
 
@@ -176,11 +232,13 @@ void Tokenizer::readString()
                     m_token.value += '\t';
                     break;
 
+                case 'u': 
+                    readUnicodeEscape();
+                    break;
+
                 default:
                     m_fail = true;
                     break;
-
-                    // TODO unicode literal: \uABCD
             }
             escaping = false;
         }

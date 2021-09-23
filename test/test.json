@@ -3,7 +3,7 @@
   "hello",
   "hello\"",
   "hello\\",
-  "hello\nthere\bone\ttwo",
+  "\" \\ \/ / \b \f \n \r \t \u002a \u263a 😀",
 
   null,
 
@@ -29,6 +29,7 @@
   {},{ }, {},
 
   [[[[]]]],
+  [ null, true, 1234.56, "hello", [], {} ],
 
   {"a":1},
   { "b" : [] }

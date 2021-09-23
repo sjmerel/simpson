@@ -15,7 +15,7 @@ public:
     Reader(std::istream&);
     ~Reader();
 
-    bool parse(JsonValue&);
+    bool read(JsonValue&);
 
     int line() const;
     int column() const;
