@@ -45,7 +45,6 @@ JsonValue::JsonValue(int value) :
     m_object()
 {}
 
-// this will also be called for any null pointer.
 JsonValue::JsonValue(const char* value) :
     m_type(value ? Type::String : Type::Null),
     m_string(),

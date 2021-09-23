@@ -34,10 +34,6 @@ public:
     bool operator==(const JsonValue&) const;
     bool operator!=(const JsonValue&) const;
 
-    // JsonValue(const JsonValue&);
-    // JsonValue& operator=(const JsonValue&);
-    // TODO move?
-
     Type type() const { return m_type; }
 
     // equivalent to comparing return value of type(), but more concise:
@@ -72,6 +68,7 @@ public:
     bool containsKey(const std::string& key) const;
     const std::string& getKey(int index) const;
 
+    // serialization
     bool readText(std::istream&);
     void writeText(std::ostream&, bool compact = false) const;
 
