@@ -145,6 +145,23 @@ int main()
 
     ////////////////////////////////////////
 
+    {
+        JsonValue value;
+        VERIFY(value.isNull());
+        value = false;
+        VERIFY(value.isBoolean());
+        value = 0;
+        VERIFY(value.isNumber());
+        value = "hello";
+        VERIFY(value.isString());
+        value = nullptr;
+        VERIFY(value.isNull());
+        value = (const char*) 0;
+        VERIFY(value.isNull());
+    }
+
+    ////////////////////////////////////////
+
     std::cout << "...done" << std::endl;
     return 0;
 }

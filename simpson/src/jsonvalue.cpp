@@ -5,66 +5,151 @@
 namespace Simpson 
 {
 
-JsonValue::JsonValue(nullptr_t) :
-    m_type(Type::Null),
-    m_string(),
-    m_number(0.0),
-    m_array(),
-    m_object()
-{}
-
 JsonValue::JsonValue(Type type) :
-    m_type(type),
-    m_string(),
-    m_number(0.0),
-    m_array(),
-    m_object()
-{}
+    m_type(type)
+{
+    switch (type)
+    {
+        case Type::Boolean:
+            m_data.boolean = false;
+            break;
+
+        case Type::Number:
+        case Type::Null:
+            m_data.number = 0.0;
+            break;
+
+        case Type::String:
+            m_data.string = new std::string();
+            break;
+
+        case Type::Array:
+            m_data.array = new std::vector<JsonValue>();
+            break;
+
+        case Type::Object:
+            m_data.object = new std::map<std::string, JsonValue>();
+            break;
+    }
+}
+
+JsonValue::JsonValue(nullptr_t) :
+    m_type(Type::Null)
+{
+    m_data.number = 0.0;
+}
 
 JsonValue::JsonValue(bool value) :
-    m_type(Type::Boolean),
-    m_string(),
-    m_number(value),
-    m_array(),
-    m_object()
-{}
+    m_type(Type::Boolean)
+{
+    m_data.boolean = value;
+}
 
 JsonValue::JsonValue(double value) :
-    m_type(Type::Number),
-    m_string(),
-    m_number(value),
-    m_array(),
-    m_object()
-{}
+    m_type(Type::Number)
+{
+    m_data.number = value;
+}
 
 JsonValue::JsonValue(int value) :
-    m_type(Type::Number),
-    m_string(),
-    m_number(value),
-    m_array(),
-    m_object()
-{}
+    m_type(Type::Number)
+{
+    m_data.number = value;
+}
 
 JsonValue::JsonValue(const char* value) :
-    m_type(value ? Type::String : Type::Null),
-    m_string(),
-    m_number(0.0),
-    m_array(),
-    m_object()
+    m_type(value ? Type::String : Type::Null)
 {
     if (value)
     {
-        m_string = value;
+        m_data.string = new std::string(value);
     }
 }
 
 JsonValue::JsonValue(const std::string& value) :
-    m_type(Type::String),
-    m_string(value),
-    m_number(0.0),
-    m_array(),
-    m_object()
-{}
+    m_type(Type::String)
+{
+    m_data.string = new std::string(value);
+}
+
+JsonValue::~JsonValue()
+{
+    switch (m_type)
+    {
+        case Type::String:
+            delete m_data.string;
+            break;
+
+        case Type::Array:
+            delete m_data.array;
+            break;
+
+        case Type::Object:
+            delete m_data.object;
+            break;
+            
+        default:
+            break;
+    }
+}
+
+JsonValue::JsonValue(const JsonValue& other):
+    m_type(other.m_type)
+{
+    switch (m_type)
+    {
+        case Type::Boolean:
+        case Type::Number:
+        case Type::Null:
+            m_data = other.m_data;
+            break;
+
+        case Type::String:
+            m_data.string = new std::string(*other.m_data.string);
+            break;
+
+        case Type::Array:
+            m_data.array = new std::vector<JsonValue>(*other.m_data.array);
+            break;
+
+        case Type::Object:
+            m_data.object = new std::map<std::string, JsonValue>(*other.m_data.object);
+            break;
+    }
+}
+
+JsonValue& JsonValue::operator=(const JsonValue& other)
+{
+    if (this != &other) 
+    { 
+        m_type = other.m_type;
+        switch (m_type)
+        {
+            case Type::Boolean:
+            case Type::Number:
+            case Type::Null:
+                m_data = other.m_data;
+                break;
+
+            case Type::String:
+                delete m_data.string;
+                m_data.string = new std::string(*other.m_data.string);
+                break;
+
+            case Type::Array:
+                delete m_data.array;
+                m_data.array = new std::vector<JsonValue>(*other.m_data.array);
+                break;
+
+            case Type::Object:
+                delete m_data.object;
+                m_data.object = new std::map<std::string, JsonValue>(*other.m_data.object);
+                break;
+        }
+    }
+
+    return *this;
+}
 
 bool JsonValue::operator==(const JsonValue& other) const
 {
@@ -112,30 +197,30 @@ bool JsonValue::operator!=(const JsonValue& other) const
 bool JsonValue::boolean() const
 {
     assertType(Type::Boolean);
-    return bool(m_number);
+    return m_data.boolean;
 }
 
 double JsonValue::number() const 
 { 
     assertType(Type::Number);
-    return m_number; 
+    return m_data.number; 
 }
 
 const std::string& JsonValue::string() const 
 { 
     assertType(Type::String);
-    return m_string; 
+    return *m_data.string; 
 }
 
 int JsonValue::size() const
 {
     if (m_type == Type::Array)
     {
-        return (int) m_array.size();
+        return (int) m_data.array->size();
     }
     else if (m_type == Type::Object)
     {
-        return (int) m_object.size();
+        return (int) m_data.object->size();
     }
     else
     {
@@ -146,49 +231,55 @@ int JsonValue::size() const
 JsonValue& JsonValue::get(int index)
 {
     assertType(Type::Array);
-    return m_array[index];
+    return (*m_data.array)[index];
 }
 
 const JsonValue& JsonValue::get(int index) const
 {
     assertType(Type::Array);
-    return m_array[index];
+    return (*m_data.array)[index];
 }
 
 JsonValue& JsonValue::operator[](int index)
 {
     assertType(Type::Array);
-    return m_array[index];
+    return (*m_data.array)[index];
 }
 
 const JsonValue& JsonValue::operator[](int index) const
 {
     assertType(Type::Array);
-    return m_array[index];
+    return (*m_data.array)[index];
 }
 
 void JsonValue::set(int index, const JsonValue& value)
 {
     assertType(Type::Array);
-    m_array[index] = value;
+    (*m_data.array)[index] = value;
+}
+
+void JsonValue::reserve(int size)
+{
+    assertType(Type::Array);
+    m_data.array->reserve(size);
 }
 
 void JsonValue::append(const JsonValue& value)
 {
     assertType(Type::Array);
-    m_array.push_back(value);
+    m_data.array->push_back(value);
 }
 
 JsonValue& JsonValue::get(const std::string& key)
 {
     assertType(Type::Object);
-    return m_object.find(key)->second;
+    return m_data.object->find(key)->second;
 }
 
 const JsonValue& JsonValue::get(const std::string& key) const
 {
     assertType(Type::Object);
-    return m_object.find(key)->second;
+    return m_data.object->find(key)->second;
 }
 
 JsonValue& JsonValue::operator[](const std::string& key)
@@ -206,19 +297,19 @@ const JsonValue& JsonValue::operator[](const std::string& key) const
 void JsonValue::set(const std::string& key, const JsonValue& value)
 {
     assertType(Type::Object);
-    m_object.insert(std::make_pair(key, value));
+    m_data.object->insert(std::make_pair(key, value));
 }
 
 bool JsonValue::containsKey(const std::string& key) const
 {
     assertType(Type::Object);
-    return m_object.find(key) != m_object.end();
+    return m_data.object->find(key) != m_data.object->end();
 }
 
 const std::string& JsonValue::getKey(int index) const 
 { 
     assertType(Type::Object);
-    auto it = m_object.begin();
+    auto it = m_data.object->begin();
     std::advance(it, index);
     return it->first; 
 }

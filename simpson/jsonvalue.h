@@ -22,13 +22,17 @@ public:
         Object
     };
 
-    JsonValue(nullptr_t = nullptr); // null
     JsonValue(Type);
+    JsonValue(nullptr_t = nullptr); // null
     JsonValue(bool);
     JsonValue(double);
     JsonValue(int);
     JsonValue(const char*); // note that a null pointer here will result in a value of type Null, not String
     JsonValue(const std::string&);
+
+    ~JsonValue();
+    JsonValue(const JsonValue&);
+    JsonValue& operator=(const JsonValue&);
 
     // value equality
     bool operator==(const JsonValue&) const;
@@ -57,6 +61,7 @@ public:
     JsonValue& operator[](int index);
     const JsonValue& operator[](int index) const;
     void set(int index, const JsonValue& value);
+    void reserve(int size);
     void append(const JsonValue& value);
 
     // object
@@ -74,10 +79,17 @@ public:
 
 private:
     Type m_type;
-    std::string m_string;
-    double m_number; // or bool
-    std::vector<JsonValue> m_array;
-    std::map<std::string, JsonValue> m_object;
+
+    union Data
+    {
+        bool boolean;
+        double number;
+        std::string* string;
+        std::vector<JsonValue>* array;
+        std::map<std::string, JsonValue>* object;
+    };
+
+    Data m_data;
 
     void assertType(Type) const;
 };
