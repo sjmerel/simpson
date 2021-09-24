@@ -242,14 +242,12 @@ const JsonValue& JsonValue::get(int index) const
 
 JsonValue& JsonValue::operator[](int index)
 {
-    assertType(Type::Array);
-    return (*m_data.array)[index];
+    return get(index);
 }
 
 const JsonValue& JsonValue::operator[](int index) const
 {
-    assertType(Type::Array);
-    return (*m_data.array)[index];
+    return get(index);
 }
 
 void JsonValue::set(int index, const JsonValue& value)
@@ -284,13 +282,11 @@ const JsonValue& JsonValue::get(const std::string& key) const
 
 JsonValue& JsonValue::operator[](const std::string& key)
 {
-    assertType(Type::Object);
     return get(key);
 }
 
 const JsonValue& JsonValue::operator[](const std::string& key) const
 {
-    assertType(Type::Object);
     return get(key);
 }
 
