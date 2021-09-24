@@ -224,7 +224,7 @@ int JsonValue::size() const
     }
     else
     {
-        throw std::runtime_error("incorrect JSON type"); 
+        throwType();
     }
 }
 
@@ -328,11 +328,16 @@ void JsonValue::writeText(std::ostream& stream, bool compact) const
 
 ////////////////////////////////////////
 
+void JsonValue::throwType() const
+{
+    throw std::runtime_error("incorrect JSON type"); 
+}
+
 void JsonValue::assertType(JsonValue::Type type) const
 {
     if (m_type != type) 
     { 
-        throw std::runtime_error("incorrect JSON type"); 
+        throwType();
     }
 }
 

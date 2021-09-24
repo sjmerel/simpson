@@ -22,13 +22,15 @@ public:
         Object
     };
 
-    JsonValue(Type);
-    JsonValue(nullptr_t = nullptr); // null
-    JsonValue(bool);
-    JsonValue(double);
-    JsonValue(int);
-    JsonValue(const char*); // note that a null pointer here will result in a value of type Null, not String
-    JsonValue(const std::string&);
+    // default-constructed value of specified type
+    JsonValue(Type = Type::Null);
+
+    JsonValue(nullptr_t); // Null
+    JsonValue(bool); // Boolean
+    JsonValue(double); // Number
+    JsonValue(int); // Number
+    JsonValue(const char*); // String (but a null pointer here will result in a value of type Null)
+    JsonValue(const std::string&); // String
 
     ~JsonValue();
     JsonValue(const JsonValue&);
@@ -48,6 +50,7 @@ public:
     bool isArray() const { return m_type == Type::Array; }
     bool isObject() const { return m_type == Type::Object; }
 
+    // get primitive values
     bool boolean() const;
     double number() const;
     const std::string& string() const;
@@ -92,6 +95,7 @@ private:
     Data m_data;
 
     void assertType(Type) const;
+    [[ noreturn ]] void throwType() const;
 };
 
 
