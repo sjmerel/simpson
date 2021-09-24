@@ -22,6 +22,9 @@ private:
 
     void writeIndent(int level);
     void writeImpl(const JsonValue&, int level = 0, const std::string& prefix = "");
+
+    Writer& operator=(const Writer&) = delete;
+    Writer(const Writer&) = delete;
 };
 
 

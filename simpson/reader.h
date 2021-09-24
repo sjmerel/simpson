@@ -22,8 +22,8 @@ public:
     int pos() const;
 
 private:
-    Reader& operator=(const Reader&);
-    Reader(const Reader&);
+    Reader& operator=(const Reader&) = delete;
+    Reader(const Reader&) = delete;
 
     Tokenizer* m_tokenizer;
     bool m_fail = false;
