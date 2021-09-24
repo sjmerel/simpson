@@ -17,6 +17,7 @@ Reader::~Reader()
 
 bool Reader::read(JsonValue& value)
 {
+    value.clear();
     m_tokenizer->advance();
     return parseValue(value);
 }
