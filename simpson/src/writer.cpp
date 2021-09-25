@@ -9,7 +9,7 @@ namespace
     std::string escape(const std::string& s)
     {
         std::string result = s;
-        for (int i = 0; i < result.length(); ++i)
+        for (int i = 0; i < (int) result.length(); ++i)
         {
             std::string repl;
             switch (result[i])

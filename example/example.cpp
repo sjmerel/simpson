@@ -3,6 +3,8 @@
 #include "simpson/jsonvalue.h"
 
 #include <fstream>
+#include <string>
+#include <algorithm>
 
 using namespace Simpson;
 

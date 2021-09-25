@@ -1,2 +1,12 @@
+# vim:
 *.swp
+
+# xcode:
 xcuserdata
+
+# visual studio:
+.vs
+*.vcxproj.user
+x64
+Debug
+Release
