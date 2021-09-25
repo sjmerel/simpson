@@ -187,6 +187,8 @@ bool JsonValue::operator==(const JsonValue& other) const
             }
             return true;
     }
+
+    return false; // we'll never get here, but MSVC warns about it anyway
 }
 
 bool JsonValue::operator!=(const JsonValue& other) const
