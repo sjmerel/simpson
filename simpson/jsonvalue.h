@@ -77,8 +77,8 @@ public:
     const std::string& getKey(int index) const;
 
     // serialization
-    bool readText(std::istream&);
-    void writeText(std::ostream&, bool compact = false) const;
+    bool read(std::istream&);
+    void write(std::ostream&, bool compact = false) const;
 
 private:
     Type m_type;

@@ -310,13 +310,13 @@ const std::string& JsonValue::getKey(int index) const
     return it->first; 
 }
 
-bool JsonValue::readText(std::istream& stream)
+bool JsonValue::read(std::istream& stream)
 {
     Reader reader(stream);
     return reader.read(*this);
 }
 
-void JsonValue::writeText(std::ostream& stream, bool compact) const
+void JsonValue::write(std::ostream& stream, bool compact) const
 {
     Writer writer(stream);
     if (compact)
