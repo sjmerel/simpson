@@ -1,0 +1,10 @@
+{
+  "my string": "this will become uppercase",
+  "my int": 3,
+  "my array": [
+    "this will also become uppercase",
+    { "foo": "and this" },
+    7,
+    true
+  ]
+}

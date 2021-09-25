@@ -1,0 +1,4 @@
+{
+  "hello": "This file is not valid JSON; the example program should indicate the error on the next line.",
+  goodbye: 7
+}

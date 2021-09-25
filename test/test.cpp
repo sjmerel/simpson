@@ -19,7 +19,7 @@ int main()
         JsonValue value;
 
         std::ifstream stream("test.json");
-        VERIFY(value.readText(stream));
+        VERIFY(value.read(stream));
 
         VERIFY(value[0].string() == value.get(0).string());
         VERIFY(value[0].isString());
@@ -87,19 +87,19 @@ int main()
 
         {
             std::ifstream stream("test.json");
-            VERIFY(value1.readText(stream));
+            VERIFY(value1.read(stream));
         }
 
         {
             std::ofstream stream("test_out.json");
-            value1.writeText(stream);
+            value1.write(stream);
         }
 
         JsonValue value2;
 
         {
             std::ifstream stream("test_out.json");
-            VERIFY(value2.readText(stream));
+            VERIFY(value2.read(stream));
         }
 
         VERIFY(value1 == value2);
