@@ -28,7 +28,7 @@ void makeUppercase(JsonValue& value)
     {
         for (int i = 0; i < value.size(); ++i)
         {
-            const std::string& key = value.getKey(i);
+            const std::string& key = value.key(i);
             makeUppercase(value[key]);
         }
     }

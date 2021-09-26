@@ -132,7 +132,7 @@ void Writer::writeImpl(const JsonValue& value, int level, const std::string& pre
                 m_stream << "{" << std::endl;
                 for (int i = 0; i < value.size(); ++i)
                 {
-                    const std::string& key = value.getKey(i);
+                    const std::string& key = value.key(i);
                     const JsonValue& keyValue = value.get(key);
                     std::string prefix = "\"" + key + "\": ";
                     writeImpl(keyValue, level+1, prefix);

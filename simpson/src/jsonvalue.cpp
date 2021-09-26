@@ -181,9 +181,9 @@ bool JsonValue::operator==(const JsonValue& other) const
             if (size() != other.size()) { return false; }
             for (int i = 0; i < size(); ++i)
             {
-                const std::string& key = getKey(i);
-                if (!other.containsKey(key)) { return false; }
-                if (get(key) != other.get(key)) { return false; }
+                const std::string& k = key(i);
+                if (!other.containsKey(k)) { return false; }
+                if (get(k) != other.get(k)) { return false; }
             }
             return true;
     }
@@ -304,7 +304,7 @@ bool JsonValue::containsKey(const std::string& key) const
     return m_data.object->find(key) != m_data.object->end();
 }
 
-const std::string& JsonValue::getKey(int index) const 
+const std::string& JsonValue::key(int index) const 
 { 
     assertType(Type::Object);
     auto it = m_data.object->begin();

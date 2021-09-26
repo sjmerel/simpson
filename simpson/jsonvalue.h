@@ -74,7 +74,7 @@ public:
     const JsonValue& operator[](const std::string& key) const;
     void set(const std::string& key, const JsonValue& value);
     bool containsKey(const std::string& key) const;
-    const std::string& getKey(int index) const;
+    const std::string& key(int index) const;
 
     // serialization
     bool read(std::istream&);
