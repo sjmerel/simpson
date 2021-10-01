@@ -22,4 +22,37 @@ It is written using standard C++ (at least the C++11 variant), so should compile
 Project files are included for the test and example programs for Windows (Visual Studio 2019) and macOS (Xcode).
 
 ## Usage
-See `example/example.cpp`.
+
+Create JSON data in code:
+
+```
+JsonValue value(JsonValue::Type::Object); // create an object
+value.set("a", 3.2);
+value.set("b", "hello");
+
+// value is now: { "a": 3.2, "b": "hello" }
+```
+
+Write it to a file:
+```
+std::ofstream stream("file.json");
+value.write(stream);
+```
+
+Write to stdout:
+```
+value.write(std::cout);
+```
+
+To read a JSON file:
+```
+std::ifstream stream("file.json");
+value.read(ifstream);
+```
+
+Query values:
+```
+double a = (int) value["a"].number();
+```
+
+See also `example/example.cpp`.
