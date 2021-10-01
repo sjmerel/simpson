@@ -52,7 +52,7 @@ value.read(ifstream);
 
 Query values:
 ```
-double a = (int) value["a"].number();
+double a = value["a"].number();
 ```
 
 See also [example/example.cpp](example/example.cpp).
