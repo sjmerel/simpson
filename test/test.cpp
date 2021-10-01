@@ -73,8 +73,8 @@ int main()
         VERIFY(value[27].size() == 6);
 
         VERIFY(value[28].size() == 1);
-        VERIFY(value[28].containsKey("a"));
-        VERIFY(!value[28].containsKey("g"));
+        VERIFY(value[28].contains("a"));
+        VERIFY(!value[28].contains("g"));
         VERIFY(value[28]["a"].isNumber());
     }
 
@@ -133,14 +133,16 @@ int main()
     ////////////////////////////////////////
 
     {
-        JsonValue value(JsonValue::Type::Array);
-        value.append(1);
-        value[0] = 2;
-        VERIFY(value[0] == 2);
-
-        const JsonValue& cvalue = value;
-        //cvalue[0] = 3;
-        VERIFY(cvalue[0] == 2);
+        JsonValue value(JsonValue::Type::Object);
+        value.set("hello", 2);
+        VERIFY(value.size() == 1);
+        VERIFY(value.contains("hello"));
+        VERIFY(!value.contains("goodbye"));
+        value.set("goodbye", 3);
+        VERIFY(value.contains("goodbye"));
+        value.remove("goodbye");
+        VERIFY(!value.contains("goodbye"));
+        VERIFY(value.size() == 1);
     }
 
     ////////////////////////////////////////

@@ -29,7 +29,7 @@ public:
     JsonValue(bool); // Boolean
     JsonValue(double); // Number
     JsonValue(int); // Number
-    JsonValue(const char*); // String (but a null pointer here will result in a value of type Null)
+    JsonValue(const char*); // String (unless pointer is null, in which case type is then Null)
     JsonValue(const std::string&); // String
 
     ~JsonValue();
@@ -64,16 +64,16 @@ public:
     JsonValue& operator[](int index);
     const JsonValue& operator[](int index) const;
     void set(int index, const JsonValue& value);
+    void remove(int index);
     void reserve(int size);
     void append(const JsonValue& value);
 
     // object
-    JsonValue& get(const std::string& key);
     const JsonValue& get(const std::string& key) const;
-    JsonValue& operator[](const std::string& key);
     const JsonValue& operator[](const std::string& key) const;
     void set(const std::string& key, const JsonValue& value);
-    bool containsKey(const std::string& key) const;
+    void remove(const std::string& key);
+    bool contains(const std::string& key) const;
     const std::string& key(int index) const;
 
     // serialization

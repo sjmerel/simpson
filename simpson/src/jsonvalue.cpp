@@ -182,7 +182,7 @@ bool JsonValue::operator==(const JsonValue& other) const
             for (int i = 0; i < size(); ++i)
             {
                 const std::string& k = key(i);
-                if (!other.containsKey(k)) { return false; }
+                if (!other.contains(k)) { return false; }
                 if (get(k) != other.get(k)) { return false; }
             }
             return true;
@@ -258,6 +258,12 @@ void JsonValue::set(int index, const JsonValue& value)
     (*m_data.array)[index] = value;
 }
 
+void JsonValue::remove(int index)
+{
+    assertType(Type::Array);
+    m_data.array->erase(m_data.array->begin() + index);
+}
+
 void JsonValue::reserve(int size)
 {
     assertType(Type::Array);
@@ -270,21 +276,10 @@ void JsonValue::append(const JsonValue& value)
     m_data.array->push_back(value);
 }
 
-JsonValue& JsonValue::get(const std::string& key)
-{
-    assertType(Type::Object);
-    return m_data.object->find(key)->second;
-}
-
 const JsonValue& JsonValue::get(const std::string& key) const
 {
     assertType(Type::Object);
     return m_data.object->find(key)->second;
-}
-
-JsonValue& JsonValue::operator[](const std::string& key)
-{
-    return get(key);
 }
 
 const JsonValue& JsonValue::operator[](const std::string& key) const
@@ -298,7 +293,12 @@ void JsonValue::set(const std::string& key, const JsonValue& value)
     m_data.object->insert(std::make_pair(key, value));
 }
 
-bool JsonValue::containsKey(const std::string& key) const
+void JsonValue::remove(const std::string& key)
+{
+    m_data.object->erase(key);
+}
+
+bool JsonValue::contains(const std::string& key) const
 {
     assertType(Type::Object);
     return m_data.object->find(key) != m_data.object->end();
