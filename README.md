@@ -55,4 +55,8 @@ Query values:
 double a = (int) value["a"].number();
 ```
 
-See also `example/example.cpp`.
+See also [example/example.cpp](example/example.cpp).
+
+## License
+
+MIT license; see [LICENSE.txt](LICENSE.txt).
