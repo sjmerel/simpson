@@ -122,8 +122,26 @@ JsonValue& JsonValue::operator=(const JsonValue& other)
 {
     if (this != &other) 
     { 
-        m_type = other.m_type;
         switch (m_type)
+        {
+            case Type::Boolean:
+            case Type::Number:
+            case Type::Null:
+                break;
+
+            case Type::String:
+                delete m_data.string;
+                break;
+
+            case Type::Array:
+                delete m_data.array;
+                break;
+
+            case Type::Object:
+                delete m_data.object;
+                break;
+        }
+        switch (other.m_type)
         {
             case Type::Boolean:
             case Type::Number:
@@ -132,20 +150,18 @@ JsonValue& JsonValue::operator=(const JsonValue& other)
                 break;
 
             case Type::String:
-                delete m_data.string;
                 m_data.string = new std::string(*other.m_data.string);
                 break;
 
             case Type::Array:
-                delete m_data.array;
                 m_data.array = new std::vector<JsonValue>(*other.m_data.array);
                 break;
 
             case Type::Object:
-                delete m_data.object;
                 m_data.object = new std::map<std::string, JsonValue>(*other.m_data.object);
                 break;
         }
+        m_type = other.m_type;
     }
 
     return *this;

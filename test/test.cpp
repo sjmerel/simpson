@@ -134,15 +134,31 @@ int main()
 
     {
         JsonValue value(JsonValue::Type::Object);
+        VERIFY(value.size() == 0);
         value.set("hello", 2);
         VERIFY(value.size() == 1);
         VERIFY(value.contains("hello"));
         VERIFY(!value.contains("goodbye"));
         value.set("goodbye", 3);
         VERIFY(value.contains("goodbye"));
+        value.set("goodbye", nullptr);
+        VERIFY(value.contains("goodbye"));
         value.remove("goodbye");
         VERIFY(!value.contains("goodbye"));
         VERIFY(value.size() == 1);
+    }
+
+    ////////////////////////////////////////
+
+    {
+        JsonValue value(JsonValue::Type::Array);
+        VERIFY(value.size() == 0);
+        value.append(2);
+        VERIFY(value.size() == 1);
+        VERIFY(value[0] == 2);
+        value[0] = "hello";
+        VERIFY(value[0] == "hello");
+        VERIFY(value[0].string() == "hello");
     }
 
     ////////////////////////////////////////
