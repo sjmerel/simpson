@@ -1,4 +1,4 @@
-#include "simpson/reader.h"
+#include "simpson/jsonreader.h"
 #include "simpson/src/tokenizer.h"
 #include <iostream>
 #include <sstream>
@@ -6,40 +6,40 @@
 namespace Simpson 
 {
 
-Reader::Reader(std::istream& stream) :
+JsonReader::JsonReader(std::istream& stream) :
     m_tokenizer(new Tokenizer(stream))
 {}
 
-Reader::~Reader()
+JsonReader::~JsonReader()
 {
     delete m_tokenizer;
 }
 
-bool Reader::read(JsonValue& value)
+bool JsonReader::read(JsonValue& value)
 {
     value = JsonValue(); // clear
     m_tokenizer->advance();
     return parseValue(value);
 }
 
-int Reader::line() const
+int JsonReader::line() const
 {
     return m_tokenizer->line();
 }
 
-int Reader::column() const
+int JsonReader::column() const
 {
     return m_tokenizer->column();
 }
 
-int Reader::pos() const
+int JsonReader::pos() const
 {
     return m_tokenizer->pos();
 }
 
 ////////////////////////////////////////
 
-bool Reader::parseBoolean(JsonValue& value)
+bool JsonReader::parseBoolean(JsonValue& value)
 {
     if (m_tokenizer->getToken().type == TokenType::BOOLEAN)
     {
@@ -53,7 +53,7 @@ bool Reader::parseBoolean(JsonValue& value)
     }
 }
 
-bool Reader::parseNumber(JsonValue& value)
+bool JsonReader::parseNumber(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::NUMBER)
     {
@@ -81,7 +81,7 @@ bool Reader::parseNumber(JsonValue& value)
     }
 }
 
-bool Reader::parseString(JsonValue& value)
+bool JsonReader::parseString(JsonValue& value)
 {
     std::string str;
     if (parseString(str))
@@ -95,7 +95,7 @@ bool Reader::parseString(JsonValue& value)
     }
 }
 
-bool Reader::parseString(std::string& value)
+bool JsonReader::parseString(std::string& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::STRING)
     {
@@ -109,7 +109,7 @@ bool Reader::parseString(std::string& value)
     }
 }
 
-bool Reader::parseNull(JsonValue& value)
+bool JsonReader::parseNull(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::NULL_)
     {
@@ -123,7 +123,7 @@ bool Reader::parseNull(JsonValue& value)
     }
 }
 
-bool Reader::parseObject(JsonValue& value)
+bool JsonReader::parseObject(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::OBJECT_START)
     {
@@ -176,7 +176,7 @@ bool Reader::parseObject(JsonValue& value)
     }
 }
 
-bool Reader::parseArray(JsonValue& value)
+bool JsonReader::parseArray(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::ARRAY_START)
     {
@@ -215,7 +215,7 @@ bool Reader::parseArray(JsonValue& value)
     }
 }
 
-bool Reader::parseValue(JsonValue& value)
+bool JsonReader::parseValue(JsonValue& value)
 {
     return parseBoolean(value) ||
            parseNumber(value) ||
@@ -225,7 +225,7 @@ bool Reader::parseValue(JsonValue& value)
            parseObject(value);
 }
 
-bool Reader::fail() const
+bool JsonReader::fail() const
 {
     return m_fail || m_tokenizer->fail();
 }

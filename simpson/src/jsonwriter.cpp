@@ -1,4 +1,4 @@
-#include "simpson/writer.h"
+#include "simpson/jsonwriter.h"
 #include <iomanip>
 
 namespace Simpson 
@@ -53,24 +53,24 @@ namespace
 
 ////////////////////////////////////////
 
-Writer::Writer(std::ostream& stream) :
+JsonWriter::JsonWriter(std::ostream& stream) :
     m_stream(stream)
 {
 }
 
-void Writer::write(const JsonValue& value)
+void JsonWriter::write(const JsonValue& value)
 {
     writeImpl(value);
 }
 
-void Writer::setIndent(int spaces) 
+void JsonWriter::setIndent(int spaces)
 {
     m_indent = std::string(spaces, ' ');
 }
 
 ////////////////////////////////////////
 
-void Writer::writeIndent(int level)
+void JsonWriter::writeIndent(int level)
 {
     for (int i = 0; i < level; ++i)
     {
@@ -78,7 +78,7 @@ void Writer::writeIndent(int level)
     }
 }
 
-void Writer::writeImpl(const JsonValue& value, int level, const std::string& prefix)
+void JsonWriter::writeImpl(const JsonValue& value, int level, const std::string& prefix)
 {
     writeIndent(level);
     m_stream << prefix;

@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		B0E49117270122C1001A8649 /* tokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49111270122C1001A8649 /* tokenizer.cpp */; };
 		B0E49118270122C1001A8649 /* jsonvalue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49112270122C1001A8649 /* jsonvalue.cpp */; };
-		B0E49119270122C1001A8649 /* reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49113270122C1001A8649 /* reader.cpp */; };
-		B0E4911A270122C1001A8649 /* writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49116270122C1001A8649 /* writer.cpp */; };
+		B0E49119270122C1001A8649 /* jsonreader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49113270122C1001A8649 /* jsonreader.cpp */; };
+		B0E4911A270122C1001A8649 /* jsonwriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E49116270122C1001A8649 /* jsonwriter.cpp */; };
 		B0E4911E270122CE001A8649 /* example.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0E4911D270122CE001A8649 /* example.cpp */; };
 /* End PBXBuildFile section */
 
@@ -28,16 +28,16 @@
 
 /* Begin PBXFileReference section */
 		B0E491012701229B001A8649 /* example */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = example; sourceTree = BUILT_PRODUCTS_DIR; };
-		B0E4910C270122C1001A8649 /* reader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = reader.h; sourceTree = "<group>"; };
+		B0E4910C270122C1001A8649 /* jsonreader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsonreader.h; sourceTree = "<group>"; };
 		B0E4910D270122C1001A8649 /* jsonvalue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsonvalue.h; sourceTree = "<group>"; };
-		B0E4910E270122C1001A8649 /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
+		B0E4910E270122C1001A8649 /* jsonwriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsonwriter.h; sourceTree = "<group>"; };
 		B0E49110270122C1001A8649 /* tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokenizer.h; sourceTree = "<group>"; };
 		B0E49111270122C1001A8649 /* tokenizer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tokenizer.cpp; sourceTree = "<group>"; };
 		B0E49112270122C1001A8649 /* jsonvalue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsonvalue.cpp; sourceTree = "<group>"; };
-		B0E49113270122C1001A8649 /* reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = reader.cpp; sourceTree = "<group>"; };
+		B0E49113270122C1001A8649 /* jsonreader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsonreader.cpp; sourceTree = "<group>"; };
 		B0E49114270122C1001A8649 /* tokentype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tokentype.h; sourceTree = "<group>"; };
 		B0E49115270122C1001A8649 /* token.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = token.h; sourceTree = "<group>"; };
-		B0E49116270122C1001A8649 /* writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = writer.cpp; sourceTree = "<group>"; };
+		B0E49116270122C1001A8649 /* jsonwriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = jsonwriter.cpp; sourceTree = "<group>"; };
 		B0E4911B270122CE001A8649 /* example.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = example.json; sourceTree = "<group>"; };
 		B0E4911C270122CE001A8649 /* invalid.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = invalid.json; sourceTree = "<group>"; };
 		B0E4911D270122CE001A8649 /* example.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = example.cpp; sourceTree = "<group>"; };
@@ -76,9 +76,9 @@
 		B0E4910B270122C1001A8649 /* simpson */ = {
 			isa = PBXGroup;
 			children = (
-				B0E4910C270122C1001A8649 /* reader.h */,
+				B0E4910C270122C1001A8649 /* jsonreader.h */,
 				B0E4910D270122C1001A8649 /* jsonvalue.h */,
-				B0E4910E270122C1001A8649 /* writer.h */,
+				B0E4910E270122C1001A8649 /* jsonwriter.h */,
 				B0E4910F270122C1001A8649 /* src */,
 			);
 			name = simpson;
@@ -91,10 +91,10 @@
 				B0E49110270122C1001A8649 /* tokenizer.h */,
 				B0E49111270122C1001A8649 /* tokenizer.cpp */,
 				B0E49112270122C1001A8649 /* jsonvalue.cpp */,
-				B0E49113270122C1001A8649 /* reader.cpp */,
+				B0E49113270122C1001A8649 /* jsonreader.cpp */,
 				B0E49114270122C1001A8649 /* tokentype.h */,
 				B0E49115270122C1001A8649 /* token.h */,
-				B0E49116270122C1001A8649 /* writer.cpp */,
+				B0E49116270122C1001A8649 /* jsonwriter.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -157,9 +157,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0E4911E270122CE001A8649 /* example.cpp in Sources */,
-				B0E4911A270122C1001A8649 /* writer.cpp in Sources */,
+				B0E4911A270122C1001A8649 /* jsonwriter.cpp in Sources */,
 				B0E49117270122C1001A8649 /* tokenizer.cpp in Sources */,
-				B0E49119270122C1001A8649 /* reader.cpp in Sources */,
+				B0E49119270122C1001A8649 /* jsonreader.cpp in Sources */,
 				B0E49118270122C1001A8649 /* jsonvalue.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -144,18 +144,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\simpson\src\jsonvalue.cpp" />
-    <ClCompile Include="..\simpson\src\reader.cpp" />
+    <ClCompile Include="..\simpson\src\jsonreader.cpp" />
     <ClCompile Include="..\simpson\src\tokenizer.cpp" />
-    <ClCompile Include="..\simpson\src\writer.cpp" />
+    <ClCompile Include="..\simpson\src\jsonwriter.cpp" />
     <ClCompile Include="example.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\simpson\jsonvalue.h" />
-    <ClInclude Include="..\simpson\reader.h" />
+    <ClInclude Include="..\simpson\jsonreader.h" />
     <ClInclude Include="..\simpson\src\token.h" />
     <ClInclude Include="..\simpson\src\tokenizer.h" />
     <ClInclude Include="..\simpson\src\tokentype.h" />
-    <ClInclude Include="..\simpson\writer.h" />
+    <ClInclude Include="..\simpson\jsonwriter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="example.json" />

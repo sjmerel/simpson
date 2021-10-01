@@ -1,5 +1,5 @@
-#include "simpson/reader.h"
-#include "simpson/writer.h"
+#include "simpson/jsonreader.h"
+#include "simpson/jsonwriter.h"
 #include "simpson/jsonvalue.h"
 
 #include <fstream>
@@ -44,9 +44,9 @@ int main(int argc, char* argv[])
 
     std::ifstream stream(argv[1]);
 
-    // We're using the Reader class here, because we want to be able to print the location of errors.
+    // We're using the JsonReader class here, because we want to be able to print the location of errors.
     // Otherwise, we could have just used value.read(stream).
-    Reader reader(stream);
+    JsonReader reader(stream);
 
     JsonValue value;
     if (!reader.read(value))
@@ -59,8 +59,8 @@ int main(int argc, char* argv[])
     // (Not a thing one needs to do normally, but it shows how to iterate through the data and modify it.)
     makeUppercase(value);
 
-    // Again, we're using the Writer class so we can set the indent, but we could also have used value.write(stream).
-    Writer writer(std::cout);
+    // Again, we're using the JsonWriter class so we can set the indent, but we could also have used value.write(stream).
+    JsonWriter writer(std::cout);
     writer.setIndent(4);
     writer.write(value);
 

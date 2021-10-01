@@ -1,6 +1,6 @@
 #include "simpson/jsonvalue.h"
-#include "simpson/reader.h"
-#include "simpson/writer.h"
+#include "simpson/jsonreader.h"
+#include "simpson/jsonwriter.h"
 
 namespace Simpson 
 {
@@ -330,13 +330,13 @@ const std::string& JsonValue::key(int index) const
 
 bool JsonValue::read(std::istream& stream)
 {
-    Reader reader(stream);
+    JsonReader reader(stream);
     return reader.read(*this);
 }
 
 void JsonValue::write(std::ostream& stream, bool compact) const
 {
-    Writer writer(stream);
+    JsonWriter writer(stream);
     if (compact)
     {
         writer.setIndent(0);

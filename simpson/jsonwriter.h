@@ -7,10 +7,10 @@ namespace Simpson
 {
 
 
-class Writer
+class JsonWriter
 {
 public:
-    Writer(std::ostream&);
+    JsonWriter(std::ostream&);
 
     void setIndent(int);
 
@@ -23,8 +23,8 @@ private:
     void writeIndent(int level);
     void writeImpl(const JsonValue&, int level = 0, const std::string& prefix = "");
 
-    Writer& operator=(const Writer&) = delete;
-    Writer(const Writer&) = delete;
+    JsonWriter& operator=(const JsonWriter&) = delete;
+    JsonWriter(const JsonWriter&) = delete;
 };
 
 

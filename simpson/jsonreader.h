@@ -9,11 +9,11 @@ namespace Simpson
 
 class Tokenizer;
 
-class Reader
+class JsonReader
 {
 public:
-    Reader(std::istream&);
-    ~Reader();
+    JsonReader(std::istream&);
+    ~JsonReader();
 
     bool read(JsonValue&);
 
@@ -22,8 +22,8 @@ public:
     int pos() const;
 
 private:
-    Reader& operator=(const Reader&) = delete;
-    Reader(const Reader&) = delete;
+    JsonReader& operator=(const JsonReader&) = delete;
+    JsonReader(const JsonReader&) = delete;
 
     Tokenizer* m_tokenizer;
     bool m_fail = false;
