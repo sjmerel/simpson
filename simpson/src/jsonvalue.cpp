@@ -5,20 +5,16 @@
 namespace Simpson 
 {
 
+namespace
+{
+    JsonValue k_undefined = JsonValue();
+}
+
 JsonValue::JsonValue(Type type) :
     m_type(type)
 {
     switch (type)
     {
-        case Type::Boolean:
-            m_data.boolean = false;
-            break;
-
-        case Type::Number:
-        case Type::Null:
-            m_data.number = 0.0;
-            break;
-
         case Type::String:
             m_data.string = new std::string();
             break;
@@ -29,6 +25,13 @@ JsonValue::JsonValue(Type type) :
 
         case Type::Object:
             m_data.object = new std::map<std::string, JsonValue>();
+            break;
+
+        case Type::Boolean:
+        case Type::Number:
+        case Type::Null:
+        case Type::Undefined:
+            memset(&m_data, 0, sizeof(m_data));
             break;
     }
 }
@@ -101,6 +104,7 @@ JsonValue::JsonValue(const JsonValue& other):
         case Type::Boolean:
         case Type::Number:
         case Type::Null:
+        case Type::Undefined:
             m_data = other.m_data;
             break;
 
@@ -127,6 +131,7 @@ JsonValue& JsonValue::operator=(const JsonValue& other)
             case Type::Boolean:
             case Type::Number:
             case Type::Null:
+            case Type::Undefined:
                 break;
 
             case Type::String:
@@ -146,6 +151,7 @@ JsonValue& JsonValue::operator=(const JsonValue& other)
             case Type::Boolean:
             case Type::Number:
             case Type::Null:
+            case Type::Undefined:
                 m_data = other.m_data;
                 break;
 
@@ -183,6 +189,7 @@ bool JsonValue::operator==(const JsonValue& other) const
             return string() == other.string();
 
         case Type::Null:
+        case Type::Undefined:
             return true;
 
         case Type::Array:
@@ -242,30 +249,47 @@ int JsonValue::size() const
     }
     else
     {
-        throwType();
+        throwTypeError();
     }
 }
 
 JsonValue& JsonValue::get(int index)
 {
-    assertType(Type::Array);
-    return (*m_data.array)[index];
+    const JsonValue& constThis = const_cast<const JsonValue&>(*this);
+    return const_cast<JsonValue&>(constThis.get(index));
 }
 
 const JsonValue& JsonValue::get(int index) const
 {
     assertType(Type::Array);
+    if (index < 0 || index >= size())
+    {
+        throw std::runtime_error("index out of range"); 
+    }
     return (*m_data.array)[index];
-}
-
-JsonValue& JsonValue::operator[](int index)
-{
-    return get(index);
 }
 
 const JsonValue& JsonValue::operator[](int index) const
 {
-    return get(index);
+    if (m_type == Type::Undefined)
+    {
+        return k_undefined;
+    }
+    else if (m_type == Type::Array)
+    {
+        if (index < 0 || index >= size())
+        {
+            return k_undefined;
+        }
+        else
+        {
+            return (*m_data.array)[index];
+        }
+    }
+    else
+    {
+        throwTypeError();
+    }
 }
 
 void JsonValue::set(int index, const JsonValue& value)
@@ -292,15 +316,48 @@ void JsonValue::append(const JsonValue& value)
     m_data.array->push_back(value);
 }
 
+JsonValue& JsonValue::get(const std::string& key)
+{
+    const JsonValue& constThis = const_cast<const JsonValue&>(*this);
+    return const_cast<JsonValue&>(constThis.get(key));
+}
+
 const JsonValue& JsonValue::get(const std::string& key) const
 {
     assertType(Type::Object);
-    return m_data.object->find(key)->second;
+    auto it = m_data.object->find(key);
+    if (it == m_data.object->end())
+    {
+        throw std::runtime_error("key does not exist"); 
+    }
+    else
+    {
+        return it->second;
+    }
 }
 
 const JsonValue& JsonValue::operator[](const std::string& key) const
 {
-    return get(key);
+    if (m_type == Type::Undefined)
+    {
+        return k_undefined;
+    }
+    else if (m_type == Type::Object)
+    {
+        auto it = m_data.object->find(key);
+        if (it == m_data.object->end())
+        {
+            return k_undefined;
+        }
+        else
+        {
+            return it->second;
+        }
+    }
+    else
+    {
+        throwTypeError();
+    }
 }
 
 void JsonValue::set(const std::string& key, const JsonValue& value)
@@ -346,7 +403,7 @@ void JsonValue::write(std::ostream& stream, bool compact) const
 
 ////////////////////////////////////////
 
-void JsonValue::throwType() const
+void JsonValue::throwTypeError() const
 {
     throw std::runtime_error("incorrect JSON type"); 
 }
@@ -355,7 +412,7 @@ void JsonValue::assertType(JsonValue::Type type) const
 {
     if (m_type != type) 
     { 
-        throwType();
+        throwTypeError();
     }
 }
 

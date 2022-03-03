@@ -47,15 +47,42 @@ value.write(std::cout);
 To read a JSON file:
 ```
 std::ifstream stream("file.json");
-value.read(ifstream);
+value.read(stream);
+```
+
+Parse a string:
+```
+std::stringstream stream("{\"hello\": \"there\"}");
+value.read(stream);
 ```
 
 Query values:
 ```
 double a = value["a"].number();
+std::string b = value["b"].string();
 ```
 
 See also [example/example.cpp](example/example.cpp).
+
+## Subscript operator vs. get()
+
+You can access JSON object values with the get() function or the array subscript operator (i.e. operator[]). Note that the behavior is different; the get() function will throw an exception if the key is not found in the object, whereas the subscript operator will return a value of type Undefined.
+```
+// assume obj is { "hello": "there" }
+obj.get("goodbye"); // this will throw an exception
+obj["goodbye"]; // this will return an Undefined JsonValue
+```
+
+Undefined values do not correspond to any actual JSON types, but are a sort of dummy object. Querying an Undefined value for any key will return another Undefined value. This lets you do this kind of convenient chaining of subscript calls:
+```
+JsonValue value = obj["user"]["date_of_birth"]["year"];
+if (value.isNumber())
+{
+   int year = (int) value.number();
+}
+```
+
+Array values behave similarly; if you access an out-of-range array element with the subscript operator, it will return an Undefined value.
 
 ## License
 

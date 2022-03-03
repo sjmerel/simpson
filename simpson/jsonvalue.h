@@ -19,18 +19,21 @@ public:
         String,
         Null,
         Array,
-        Object
+        Object,
+
+        // Undefined is not a true JSON type, but a dummy type that lets you chain object/array subscripts.
+        Undefined
     };
 
     // default-constructed value of specified type
-    JsonValue(Type = Type::Null);
+    JsonValue(Type = Type::Undefined);
 
-    JsonValue(nullptr_t); // Null
-    JsonValue(bool); // Boolean
-    JsonValue(double); // Number
-    JsonValue(int); // Number
-    JsonValue(const char*); // String (unless pointer is null, in which case type is then Null)
-    JsonValue(const std::string&); // String
+    JsonValue(nullptr_t); // Null type
+    JsonValue(bool); // Boolean type
+    JsonValue(double); // Number type
+    JsonValue(int); // Number type
+    JsonValue(const std::string&); // String type
+    JsonValue(const char*); // String type (unless pointer is null, in which case type is then Null)
 
     ~JsonValue();
     JsonValue(const JsonValue&);
@@ -49,6 +52,7 @@ public:
     bool isNull() const { return m_type == Type::Null; }
     bool isArray() const { return m_type == Type::Array; }
     bool isObject() const { return m_type == Type::Object; }
+    bool isUndefined() const { return m_type == Type::Undefined; }
 
     // get primitive values
     bool boolean() const;
@@ -61,7 +65,6 @@ public:
     // array
     JsonValue& get(int index);
     const JsonValue& get(int index) const;
-    JsonValue& operator[](int index);
     const JsonValue& operator[](int index) const;
     void set(int index, const JsonValue& value);
     void remove(int index);
@@ -69,6 +72,7 @@ public:
     void append(const JsonValue& value);
 
     // object
+    JsonValue& get(const std::string& key);
     const JsonValue& get(const std::string& key) const;
     const JsonValue& operator[](const std::string& key) const;
     void set(const std::string& key, const JsonValue& value);
@@ -95,7 +99,7 @@ private:
     Data m_data;
 
     void assertType(Type) const;
-    [[ noreturn ]] void throwType() const;
+    [[ noreturn ]] void throwTypeError() const;
 };
 
 

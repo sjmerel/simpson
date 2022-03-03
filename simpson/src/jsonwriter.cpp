@@ -100,6 +100,9 @@ void JsonWriter::writeImpl(const JsonValue& value, int level, const std::string&
             m_stream << "null";
             break;
 
+        case JsonValue::Type::Undefined:
+            break;
+
         case JsonValue::Type::Array:
             if (value.size() == 0)
             {

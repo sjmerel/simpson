@@ -113,7 +113,7 @@ bool JsonReader::parseNull(JsonValue& value)
 {
     if (!fail() && m_tokenizer->getToken().type == TokenType::NULL_)
     {
-        value = JsonValue();
+        value = JsonValue(nullptr);
         m_tokenizer->advance();
         return true;
     }

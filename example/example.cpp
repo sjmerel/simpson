@@ -21,7 +21,7 @@ void makeUppercase(JsonValue& value)
     {
         for (int i = 0; i < value.size(); ++i)
         {
-            makeUppercase(value[i]);
+            makeUppercase(value.get(i));
         }
     }
     else if (value.isObject())
@@ -29,7 +29,7 @@ void makeUppercase(JsonValue& value)
         for (int i = 0; i < value.size(); ++i)
         {
             const std::string& key = value.key(i);
-            makeUppercase(value[key]);
+            makeUppercase(value.get(key));
         }
     }
 }

@@ -1,5 +1,6 @@
 #include "simpson/jsonvalue.h"
 #include <fstream>
+#include <sstream>
 
 using namespace Simpson;
 
@@ -156,7 +157,8 @@ int main()
         value.append(2);
         VERIFY(value.size() == 1);
         VERIFY(value[0] == 2);
-        value[0] = "hello";
+        //value[0] = "hello";
+        value.set(0, "hello");
         VERIFY(value[0] == "hello");
         VERIFY(value[0].string() == "hello");
     }
@@ -165,7 +167,7 @@ int main()
 
     {
         JsonValue value;
-        VERIFY(value.isNull());
+        VERIFY(value.isUndefined());
         value = false;
         VERIFY(value.isBoolean());
         value = 0;
@@ -176,6 +178,27 @@ int main()
         VERIFY(value.isNull());
         value = (const char*) 0;
         VERIFY(value.isNull());
+    }
+
+    ////////////////////////////////////////
+
+    {
+        JsonValue value(JsonValue::Type::Object);
+        VERIFY(value.isObject());
+        value.set("foo", "bar");
+        VERIFY(value["foo"].isString());
+        VERIFY(value["hello"].isUndefined());
+        VERIFY(value["hello"]["there"].isUndefined());
+        VERIFY(value["hello"]["there"][1].isUndefined());
+    }
+
+    ////////////////////////////////////////
+
+    {
+        std::stringstream str("{\"hello\":\"there\"}");
+        JsonValue value;
+        VERIFY(value.read(str));
+        VERIFY(value["hello"] == "there");
     }
 
     ////////////////////////////////////////
