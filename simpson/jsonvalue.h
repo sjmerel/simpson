@@ -57,6 +57,8 @@ public:
     // get primitive values
     bool boolean() const;
     double number() const;
+    float numberFloat() const { return (float) number(); }
+    int numberInt() const { return (int) number(); }
     const std::string& string() const;
 
     // array/object
