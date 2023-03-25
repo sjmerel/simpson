@@ -21,12 +21,12 @@ public:
         Array,
         Object,
 
-        // Undefined is not a true JSON type, but a dummy type that lets you chain object/array subscripts.
-        Undefined
+        // Invalid is not a true JSON type, but a dummy type that lets you chain object/array subscripts.
+        Invalid
     };
 
     // default-constructed value of specified type
-    JsonValue(Type = Type::Undefined);
+    JsonValue(Type = Type::Invalid);
 
     JsonValue(nullptr_t); // Null type
     JsonValue(bool); // Boolean type
@@ -52,7 +52,10 @@ public:
     bool isNull() const { return m_type == Type::Null; }
     bool isArray() const { return m_type == Type::Array; }
     bool isObject() const { return m_type == Type::Object; }
-    bool isUndefined() const { return m_type == Type::Undefined; }
+
+    bool isInvalid() const { return m_type == Type::Invalid; }
+    bool isValid() const { return m_type != Type::Invalid; }
+    explicit operator bool() const { return m_type != Type::Invalid; }
 
     // get primitive values
     bool boolean() const;
@@ -61,12 +64,21 @@ public:
     int numberInt() const { return (int) number(); }
     const std::string& string() const;
 
+    // get primitive values, or default if invalid
+    bool boolean(bool def) const;
+    double number(double def) const;
+    float numberFloat(float def) const;
+    int numberInt(int def) const;
+    const std::string& string(const std::string def) const;
+
     // array/object
     int size() const;
+    void clear();
 
     // array
     JsonValue& get(int index);
     const JsonValue& get(int index) const;
+    JsonValue& operator[](int index);
     const JsonValue& operator[](int index) const;
     void set(int index, const JsonValue& value);
     void remove(int index);
@@ -76,6 +88,7 @@ public:
     // object
     JsonValue& get(const std::string& key);
     const JsonValue& get(const std::string& key) const;
+    JsonValue& operator[](const std::string& key);
     const JsonValue& operator[](const std::string& key) const;
     void set(const std::string& key, const JsonValue& value);
     void remove(const std::string& key);

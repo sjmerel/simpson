@@ -167,7 +167,7 @@ int main()
 
     {
         JsonValue value;
-        VERIFY(value.isUndefined());
+        VERIFY(value.isInvalid());
         value = false;
         VERIFY(value.isBoolean());
         value = 0;
@@ -187,9 +187,9 @@ int main()
         VERIFY(value.isObject());
         value.set("foo", "bar");
         VERIFY(value["foo"].isString());
-        VERIFY(value["hello"].isUndefined());
-        VERIFY(value["hello"]["there"].isUndefined());
-        VERIFY(value["hello"]["there"][1].isUndefined());
+        VERIFY(value["hello"].isInvalid());
+        VERIFY(value["hello"]["there"].isInvalid());
+        VERIFY(value["hello"]["there"][1].isInvalid());
     }
 
     ////////////////////////////////////////
