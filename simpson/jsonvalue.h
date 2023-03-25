@@ -69,7 +69,7 @@ public:
     double number(double def) const;
     float numberFloat(float def) const;
     int numberInt(int def) const;
-    const std::string& string(const std::string def) const;
+    const std::string& string(const std::string& def) const;
 
     // array/object
     int size() const;

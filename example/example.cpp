@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     JsonValue value;
     if (!reader.read(value))
     {
-        std::cerr << "error at line " << reader.line() << ", column " << reader.column() << std::endl;
+        std::cerr << "error at line " << (reader.line()+1) << ", column " << (reader.column()+1) << std::endl;
         return 1;
     }
 
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     // (Not a thing one needs to do normally, but it shows how to iterate through the data and modify it.)
     makeUppercase(value);
 
-    // Again, we're using the JsonWriter class so we can set the indent, but we could also have used value.write(stream).
+    // Again, we're using the JsonWriter class so we can set the indent, but we could also have just used value.write(stream).
     JsonWriter writer(std::cout);
     writer.setIndent(4);
     writer.write(value);

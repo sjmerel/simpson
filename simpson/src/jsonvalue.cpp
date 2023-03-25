@@ -267,7 +267,7 @@ int JsonValue::numberInt(int def) const
     return isNumber() ? numberInt() : def;
 }
 
-const std::string& JsonValue::string(const std::string def) const
+const std::string& JsonValue::string(const std::string& def) const
 {
     return isString() ? string() : def;
 }

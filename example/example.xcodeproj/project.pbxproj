@@ -282,7 +282,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = EU8W3VHS4S;
+				DEVELOPMENT_TEAM = Y2U5Q3CRXG;
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = ..;
 				PRODUCT_NAME = "$(TARGET_NAME)";
