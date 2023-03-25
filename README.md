@@ -80,9 +80,10 @@ if (value.isNumber())
 {
    int year = value.numberInt();
 }
+```
 
-// or:
-
+or:
+```
 int year = obj["user"]["date_of_birth"]["year"].number(-1); // will return -1 if invalid
 ```
 
