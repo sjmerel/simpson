@@ -81,8 +81,9 @@ if (value.isNumber())
    int year = value.numberInt();
 }
 ```
+If any of those keys don't exist, the value is invalid, and `isNumber()` will return false.
 
-or:
+Or, similarly:
 ```
 int year = obj["user"]["date_of_birth"]["year"].number(-1); // will return -1 if invalid
 ```
